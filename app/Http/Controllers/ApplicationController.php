@@ -10,7 +10,7 @@ class ApplicationController extends Controller
 {
     public function dashboard()
     {
-        $applications = Application::where('user_id', Auth::id())->latest()->get();
+        $applications = Application::with('user')->where('user_id', Auth::id())->latest()->get();
         return view('dashboard', compact('applications'));
     }
 

@@ -2,26 +2,36 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class RedirectIfAuthenticated
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string ...$guards): Response
+    public function handle(Request $request, Closure $next, ...$guards)
     {
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+            if (auth()->guard($guard)->check()) {
+                
+                // Only redirect if the user is trying to access login or registration pages
+                if ($request->is('login') || $request->is('register') || $request->is('admin/login')) {
+                    $role = auth()->user()->role;
+
+                    if ($role === 'student') {
+                        return redirect()->route('dashboard');
+                    }
+
+                    if (in_array($role, ['super_admin', 'clerk'])) {
+                        return redirect()->route('admin.applications.index');
+                    }
+
+                    // Fallback
+                    return redirect('/');
+                }
             }
         }
 
