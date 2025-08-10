@@ -6,19 +6,33 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Application;
 
-
 class ApplicationController extends Controller
 {
-    public function index()
+    /**
+     * Show paginated applications.
+     */
+    public function index(Request $request)
     {
-        // Get all applications with their related student
-        $applications = Application::with('user')->latest()->get();
+        // simple paginate, 10 per page (change number as you like)
+        $applications = Application::with('user')->latest()->paginate(10);
 
-        // Get logged-in user's role
         $userRole = auth()->user()->role;
 
-        // Pass data to the view
         return view('admin.applications.index', compact('applications', 'userRole'));
-        
+    }
+
+    /**
+     * Update application status.
+     */
+    public function update(Request $request, Application $application)
+    {
+        $data = $request->validate([
+            'status' => 'required|in:Pending,Approved,Rejected', // adjust allowed values if needed
+        ]);
+
+        $application->status = $data['status'];
+        $application->save();
+
+        return redirect()->back()->with('success', 'Application status updated.');
     }
 }
