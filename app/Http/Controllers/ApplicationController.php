@@ -11,7 +11,7 @@ class ApplicationController extends Controller
     public function dashboard()
     {
         $applications = Application::with('user')->where('user_id', Auth::id())->latest()->get();
-        return view('dashboard', compact('applications'));
+        return view('application', compact('application'));
     }
 
     public function store(Request $request)

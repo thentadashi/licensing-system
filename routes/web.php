@@ -36,6 +36,7 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 // ====================== STUDENT ROUTES ======================
 Route::middleware(['auth', 'role:student'])->group(function () {
     Route::get('/dashboard', [ApplicationController::class, 'dashboard'])->name('dashboard');
+    Route::post('/application', [ApplicationController::class, 'application'])->name('application');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
