@@ -8,10 +8,14 @@ use Illuminate\Support\Facades\Storage;
 
 class ApplicationController extends Controller
 {
-    public function dashboard()
+    public function dashboard() 
     {
-        $applications = Application::with('user')->where('user_id', Auth::id())->latest()->get();
-        return view('application', compact('application'));
+        $applications = Application::with('user')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('Application', compact('applications'));
     }
 
     public function store(Request $request)

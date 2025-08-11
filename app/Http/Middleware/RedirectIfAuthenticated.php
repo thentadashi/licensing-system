@@ -26,7 +26,7 @@ class RedirectIfAuthenticated
                     }
 
                     if (in_array($role, ['super_admin', 'clerk'])) {
-                        return redirect()->route('admin.applications.index');
+                        return redirect()->route('admin.dashboard');
                     }
 
                     // Fallback

@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\ApplicationController as AdminApplicationControll
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\StudentController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -41,6 +40,7 @@ Route::middleware(['auth', 'role:student'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 
     Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
 });

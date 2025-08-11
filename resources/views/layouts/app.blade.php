@@ -91,7 +91,8 @@
     <aside id="appSidebar" class="app-sidebar">
       <nav class="nav flex-column mt-2">
         <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}" href="{{ url('dashboard') }}"><i class="bi bi-house-door-fill"></i> Dashboard</a>
-        <a class="nav-link {{ request()->is('applications') ? 'active' : '' }}" href="{{ url('/applications') }}"><i class="bi bi-file-earmark-text"></i> Application</a>
+        <!--<a class="nav-link {{ request()->is('applications') ? 'active' : '' }}" href="{{ url('/applications') }}"><i class="bi bi-file-earmark-text"></i> Application</a>-->
+        <a class="nav-link {{ request()->is('applications') ? 'active' : '' }}" href="#"><i class="bi bi-file-earmark-text"></i> Application</a>
         <a class="nav-link" href="#"><i class="bi bi-box-arrow-up-right"></i> Release</a>
         <a class="nav-link" href="#"><i class="bi bi-calendar-event"></i> Appointments</a>
       </nav>
