@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -7,6 +7,9 @@ use App\Http\Controllers\Admin\ApplicationController as AdminApplicationControll
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\StudentController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,8 +35,23 @@ Route::middleware('guest')->group(function () {
 // ====================== ADMIN LOGOUT ======================
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
-// ====================== STUDENT ROUTES ======================
-Route::middleware(['auth', 'role:student'])->group(function () {
+// ====================== EMAIL VERIFICATION ======================
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect()->route('dashboard');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+// ====================== STUDENT ROUTES (EMAIL VERIFIED ONLY) ======================
+Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('/dashboard', [ApplicationController::class, 'dashboard'])->name('dashboard');
     Route::post('/application', [ApplicationController::class, 'application'])->name('application');
 
@@ -54,9 +72,6 @@ Route::middleware(['auth', 'role:super_admin'])
             return "Super Admin Settings Page";
         })->name('admin.settings');
 
-
-
-
         // Student management routes
         Route::get('/admin/students', [StudentController::class, 'index'])->name('admin.students.index');
         Route::resource('students', StudentController::class)->except(['create', 'store', 'show']);
@@ -72,5 +87,3 @@ Route::middleware(['auth', 'role:super_admin,clerk'])
         Route::patch('/applications/{application}', [AdminApplicationController::class, 'update'])->name('admin.applications.update');
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     });
-
-
