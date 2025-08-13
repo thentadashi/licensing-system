@@ -5,10 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Admin\ApplicationController as AdminApplicationController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\StudentController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\dashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,19 +50,26 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('message', 'Verification link sent!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');        
 
 // ====================== STUDENT ROUTES (EMAIL VERIFIED ONLY) ======================
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
-    Route::get('/dashboard', [ApplicationController::class, 'dashboard'])->name('dashboard');
-    Route::post('/application', [ApplicationController::class, 'application'])->name('application');
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::put('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
-
-    Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
+    Route::get('/dashboard', [dashboardController::class, 'dashboard'])->name('dashboard'); // for viewing the dashboard
+    Route::get('/application', [ApplicationController::class, 'application'])->name('application'); // for viewing the page
+    Route::post('/application', [ApplicationController::class, 'store'])->name('applications.store'); // for submitting the form
+    Route::get('/applications', [ApplicationController::class, 'application'])->name('applications'); // for viewing the applications
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');  // for viewing the profile edit page
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // for updating the profile
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');      // for deleting the profile
+    Route::put('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');    // for resetting the password
+    Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset'); // for viewing the reset password page
+    Route::get('/downloadable-forms', function () {
+        return view('downloadable-forms');
+    })->name('downloadable-forms'); // for viewing the downloadable forms
+    Route::get('/license-requirements', function () {
+        return view('license-requirements');
+    })->name('license-requirements'); // for viewing the license requirements
+    Route::get('/announcements', [AdminDashboardController::class, 'announcements'])->name('announcements'); // for viewing announcements   
 });
 
 // ====================== ADMIN ROUTES ======================
@@ -73,7 +82,7 @@ Route::middleware(['auth', 'role:super_admin'])
         })->name('admin.settings');
 
         // Student management routes
-        Route::get('/admin/students', [StudentController::class, 'index'])->name('admin.students.index');
+        Route::get('/admin/students', [StudentController::class, 'index'])->name('admin.students.index');       
         Route::resource('students', StudentController::class)->except(['create', 'store', 'show']);
         Route::get('admin/students/{student}/edit', [StudentController::class, 'edit'])->name('admin.students.edit');
         Route::delete('admin/students/{student}', [AdminStudentController::class, 'destroy'])->name('admin.students.destroy');
@@ -83,7 +92,15 @@ Route::middleware(['auth', 'role:super_admin'])
 Route::middleware(['auth', 'role:super_admin,clerk'])
     ->prefix('admin')
     ->group(function () {
-        Route::get('/applications', [AdminApplicationController::class, 'index'])->name('admin.applications.index');
+        Route::get('/applications', [AdminApplicationController::class, 'index'])->name('admin.applications.index');   
         Route::patch('/applications/{application}', [AdminApplicationController::class, 'update'])->name('admin.applications.update');
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+          // Fixed announcement routes
+        Route::get('/announcements', [AnnouncementController::class, 'index'])->name('admin.announcements.index');
+        Route::get('/announcements/create', [AnnouncementController::class, 'create'])->name('admin.announcements.create');
+        Route::post('/announcements', [AnnouncementController::class, 'store'])->name('admin.announcements.store');
+        Route::get('/announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('admin.announcements.edit');
+        Route::put('/announcements/{announcement}', [AnnouncementController::class, 'update'])->name('admin.announcements.update');
+        Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('admin.announcements.destroy');
     });

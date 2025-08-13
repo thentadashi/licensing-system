@@ -101,7 +101,10 @@
           <a href="#" class="nav-link"><i class="bi bi-box-arrow-up"></i> Release</a>
           <a href="#" class="nav-link"><i class="bi bi-airplane-fill"></i> Check ride</a>
           <a href="#" class="nav-link"><i class="bi bi-calendar-event"></i> Schedule</a>
-          <a href="#" class="nav-link"><i class="bi bi-megaphone-fill"></i> Post Agenda</a>
+          <a href="{{ route('admin.announcements.index') }}" class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
+              <i class="bi bi-megaphone-fill"></i> Post Agenda
+          </a>
+
           <a href="#" class="nav-link"><i class="bi bi-bar-chart-line-fill"></i> Reports</a>
           <a href="#" class="nav-link"><i class="bi bi-gear-fill"></i> Settings</a>
         </nav>

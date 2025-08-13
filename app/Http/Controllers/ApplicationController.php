@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ApplicationController extends Controller
 {
-    public function dashboard() 
+    public function application() 
     {
         $applications = Application::with('user')
             ->where('user_id', Auth::id())

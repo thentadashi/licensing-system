@@ -10,6 +10,10 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
+    .bg-custom-primary {
+    background-color: #262e70 !important;
+    color: #fff !important;
+    }
     :root {
       --sidebar-bg: #262e70; /* dark blue - sidebar */
       --primary-color: #262e70; /* button/brand color */
@@ -25,7 +29,6 @@
 
     /* layout container */
     .app-shell { display:flex; min-height:calc(100vh - 0px); }
-
     /* Sidebar */
     .app-sidebar {
       width: 200px;
@@ -91,8 +94,7 @@
     <aside id="appSidebar" class="app-sidebar">
       <nav class="nav flex-column mt-2">
         <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}" href="{{ url('dashboard') }}"><i class="bi bi-house-door-fill"></i> Dashboard</a>
-        <!--<a class="nav-link {{ request()->is('applications') ? 'active' : '' }}" href="{{ url('/applications') }}"><i class="bi bi-file-earmark-text"></i> Application</a>-->
-        <a class="nav-link {{ request()->is('applications') ? 'active' : '' }}" href="#"><i class="bi bi-file-earmark-text"></i> Application</a>
+        <a class="nav-link {{ request()->is('applications') ? 'active' : '' }}" href="{{ url('/applications') }}"><i class="bi bi-file-earmark-text"></i> Application</a>
         <a class="nav-link" href="#"><i class="bi bi-box-arrow-up-right"></i> Release</a>
         <a class="nav-link" href="#"><i class="bi bi-calendar-event"></i> Appointments</a>
       </nav>
