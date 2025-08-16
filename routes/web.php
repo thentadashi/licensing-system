@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\StudentController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\dashboardController;
+use App\Http\Controllers\ApplicationController as StudentApplicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,13 +64,13 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');      // for deleting the profile
     Route::put('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');    // for resetting the password
     Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset'); // for viewing the reset password page
-    Route::get('/downloadable-forms', function () {
-        return view('downloadable-forms');
-    })->name('downloadable-forms'); // for viewing the downloadable forms
-    Route::get('/license-requirements', function () {
-        return view('license-requirements');
-    })->name('license-requirements'); // for viewing the license requirements
-    Route::get('/announcements', [AdminDashboardController::class, 'announcements'])->name('announcements'); // for viewing announcements   
+    Route::get('/downloadable-forms', function () {return view('downloadable-forms');})->name('downloadable-forms'); // for viewing the downloadable forms
+    Route::get('/license-requirements', function () {return view('license-requirements');})->name('license-requirements'); // for viewing the license requirements
+    Route::get('/announcements', [AdminDashboardController::class, 'announcements'])->name('announcements'); // for viewing announcements
+    Route::get('/applications/{application}/revision', [StudentApplicationController::class, 'showRevisionForm'])->name('applications.showRevisionForm'); // for showing the revision form
+    Route::post('/applications/{application}/revision', [StudentApplicationController::class, 'submitRevision'])->name('applications.submitRevision'); // for submitting the revision
+    Route::get('/applications/{application}', [StudentApplicationController::class, 'show'])->name('applications.show'); // for viewing a specific application
+    Route::post('/applications/{application}/reupload', [ApplicationController::class, 'reupload'])->name('applications.reupload');
 });
 
 // ====================== ADMIN ROUTES ======================
@@ -103,4 +104,8 @@ Route::middleware(['auth', 'role:super_admin,clerk'])
         Route::get('/announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('admin.announcements.edit');
         Route::put('/announcements/{announcement}', [AnnouncementController::class, 'update'])->name('admin.announcements.update');
         Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('admin.announcements.destroy');
+        Route::get('/announcements/{announcement}', [AnnouncementController::class, 'show'])->name('admin.announcements.show');
+        Route::patch('/announcements/{announcement}/toggle', [AnnouncementController::class, 'toggleVisibility'])->name('admin.announcements.toggle');
+        Route::post('/applications/{application}/revision', [AdminApplicationController::class, 'requestRevision'])->name('admin.applications.requestRevision');
+        Route::get('/applications/{application}', [AdminApplicationController::class, 'show'])->name('admin.applications.show');
     });

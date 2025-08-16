@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Announcement;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
@@ -17,6 +16,28 @@ class AnnouncementController extends Controller
     {
         $announcements = Announcement::latest()->get();
         return view('admin.announcements.index', compact('announcements'));
+    }
+
+    /**
+     * Show a single announcement.
+     */
+    public function show(Announcement $announcement)
+    {
+        return view('admin.announcements.show', compact('announcement'));
+    }
+
+    /**
+     * Toggle visibility between 'visible' and 'hidden'.
+     */
+    public function toggleVisibility(Announcement $announcement)
+    {
+        $current = $announcement->getRawOriginal('status') ?: 'visible';
+        $announcement->status = $current === 'visible' ? 'hidden' : 'visible';
+        $announcement->save();
+
+        return redirect()
+            ->route('admin.announcements.index')
+            ->with('success', 'Announcement status updated successfully.');
     }
 
     /**
@@ -33,9 +54,9 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'nullable|string|max:255',
-            'content' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'title'        => 'nullable|string|max:255',
+            'content'      => 'nullable|string',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'publish_date' => 'nullable|date',
         ]);
 
@@ -65,16 +86,15 @@ class AnnouncementController extends Controller
     public function update(Request $request, Announcement $announcement)
     {
         $request->validate([
-            'title' => 'nullable|string|max:255',
-            'content' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'title'        => 'nullable|string|max:255',
+            'content'      => 'nullable|string',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'publish_date' => 'nullable|date',
         ]);
 
         $data = $request->only(['title', 'content', 'publish_date']);
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($announcement->image) {
                 Storage::disk('public')->delete($announcement->image);
             }
@@ -92,7 +112,6 @@ class AnnouncementController extends Controller
      */
     public function destroy(Announcement $announcement)
     {
-        // Delete image if exists
         if ($announcement->image) {
             Storage::disk('public')->delete($announcement->image);
         }

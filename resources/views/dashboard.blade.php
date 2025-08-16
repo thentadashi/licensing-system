@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 @section('title', 'Student Dashboard')
 
 @section('content')
@@ -6,11 +7,11 @@
     <!-- Section 2: Announcements -->
     <div class="col-lg-8 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">
-                <i class="bi bi-megaphone-fill text-primary me-2"></i>
+            <h4 class="mb-0" style="color: #262e70;">
+                <i class="bi bi-megaphone-fill me-2" style="color: #262e70"></i>
                 Announcements
             </h4>
-            <small class="text-muted">{{ $announcements->count() }} announcement(s)</small>
+            <small style="color: #262e70">{{ $announcements->count() }} announcement(s)</small>
         </div>
 
         @forelse($announcements as $announcement)
@@ -62,26 +63,26 @@
             </div>
         @empty
             {{-- Default announcement when no announcements exist --}}
-            <div class="card shadow-sm mb-3 border-0" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+            <div class="card shadow-sm mb-3 border-0" style="background: linear-gradient(135deg, #ffffff 0%, #f7f7f7 100%);">
                 <div class="card-body text-center py-5">
-                    <i class="bi bi-megaphone text-primary" style="font-size: 4rem; opacity: 0.7;"></i>
-                    <h5 class="card-title mt-3 text-primary">Welcome to the Student Portal</h5>
+                    <i class="bi bi-megaphone" style="font-size: 4rem; opacity: 1;color: #262e70;"></i>
+                    <h5 class="card-title mt-3" style="color: #262e70;">Welcome to the WCC Licensing Portal</h5>
                     <p class="card-text text-muted mb-4">Stay tuned for updates from the administration. All announcements will appear here.</p>
                     <div class="row text-center">
                         <div class="col-md-4">
-                            <i class="bi bi-bell-fill text-info" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-bell-fill" style="font-size: 1.5rem; color: #262e70;"></i>
                             <p class="small mt-2 mb-0">Get Notified</p>
                         </div>
                         <div class="col-md-4">
-                            <i class="bi bi-calendar-check-fill text-success" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-calendar-check-fill" style="font-size: 1.5rem; color: #262e70;"></i>
                             <p class="small mt-2 mb-0">Stay Updated</p>
                         </div>
                         <div class="col-md-4">
-                            <i class="bi bi-people-fill text-warning" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-people-fill" style="font-size: 1.5rem; color: #262e70;"></i>
                             <p class="small mt-2 mb-0">Connect</p>
                         </div>
                     </div>
-                    <small class="text-muted mt-3 d-block">Portal active since {{ now()->format('M d, Y') }}</small>
+                    <small class="text-success mt-3 d-block">Portal is active Manila Ph. - {{ now()->format('T- h:i A - M d, Y') }}</small>
                 </div>
             </div>
         @endforelse
@@ -95,15 +96,15 @@
                 License Application Requirements
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">PEL Number</li>
-                <li class="list-group-item">Medical Certificate</li>
-                <li class="list-group-item">RT License</li>
-                <li class="list-group-item">English Language Proficiency</li>
-                <li class="list-group-item">Private Pilot License</li>
-                <li class="list-group-item">Commercial Pilot License</li>
-                <li class="list-group-item">Additional Rating</li>
-                <li class="list-group-item">Ground Instructor License</li>
-                <li class="list-group-item">Flight Instructor License</li>
+                <li class="list-group-item"  style="color: #262e70;">PEL Number</li>
+                <li class="list-group-item"  style="color: #262e70;">Medical Certificate</li>
+                <li class="list-group-item"  style="color: #262e70;">RT License</li>
+                <li class="list-group-item"  style="color: #262e70;">English Language Proficiency</li>
+                <li class="list-group-item"  style="color: #262e70;">Private Pilot License</li>
+                <li class="list-group-item"  style="color: #262e70;">Commercial Pilot License</li>
+                <li class="list-group-item"  style="color: #262e70;">Additional Rating</li>
+                <li class="list-group-item"  style="color: #262e70;">Ground Instructor License</li>
+                <li class="list-group-item"  style="color: #262e70;">Flight Instructor License</li>
             </ul>
         </div>
 
@@ -114,17 +115,17 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
-                    <a href="#" class="text-decoration-none">
+                    <a href="#" class="text-decoration-none"  style="color: #262e70;">
                         <i class="bi bi-file-earmark-arrow-down"></i> 541 Form
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <a href="#" class="text-decoration-none">
+                    <a href="#" class="text-decoration-none"  style="color: #262e70;">
                         <i class="bi bi-file-earmark-arrow-down"></i> Medical Forms
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <a href="#" class="text-decoration-none">
+                    <a href="#" class="text-decoration-none"  style="color: #262e70;">
                         <i class="bi bi-file-earmark-arrow-down"></i> Radiotelephony Form
                     </a>
                 </li>

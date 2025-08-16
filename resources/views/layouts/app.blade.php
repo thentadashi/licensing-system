@@ -113,7 +113,7 @@
       <header class="app-topbar">
         <div class="d-flex align-items-center">
           <button id="sidebarToggle" class="btn btn-outline-secondary d-lg-none me-2" aria-label="Toggle menu"><i class="bi bi-list"></i></button>
-          <div class="small-muted">Welcome to the student portal</div>
+          <div class="small-muted"><i class="bi bi-calendar"></i> {{ now()->format('M d, Y') }}</div>
         </div>
 
         <div>

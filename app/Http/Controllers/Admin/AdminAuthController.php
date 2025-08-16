@@ -36,7 +36,7 @@ class AdminAuthController extends Controller
 
             // Allow only super_admin & clerk
             if (in_array($user->role, ['super_admin', 'clerk'])) {
-                return redirect()->route('admin.applications.index');
+                return redirect()->route('admin.dashboard');
             }
 
             // If student tries to login here → logout and show error

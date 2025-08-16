@@ -8,31 +8,52 @@ use App\Models\Application;
 
 class ApplicationController extends Controller
 {
-    /**
-     * Show paginated applications.
-     */
     public function index(Request $request)
     {
-        // simple paginate, 10 per page (change number as you like)
-        $applications = Application::with('user')->latest()->paginate(10);
-
+        $applications = Application::with(['user', 'files', 'extraFields'])->latest()->paginate(10);
         $userRole = auth()->user()->role;
-
         return view('admin.applications.index', compact('applications', 'userRole'));
     }
 
-    /**
-     * Update application status.
-     */
+    // ✅ Request Revision feature
+    public function requestRevision(Request $request, $id)
+    {
+        $app = Application::findOrFail($id);
+
+        $validated = $request->validate([
+            'files' => 'required|array',
+            'files.*' => 'string',
+            'notes' => 'nullable|string'
+        ]);
+
+        $app->revision_files = json_encode($validated['files']);
+        $app->revision_notes = $validated['notes'] ?? null;
+        $app->status = 'Revision Requested'; // ✅ changed to new status
+        $app->save();
+
+        return back()->with('success', 'Revision request sent to student.');
+    }
+    
+    public function show(Application $application)
+    {
+        return view('admin.applications.show', compact('application'));
+    }
+
     public function update(Request $request, Application $application)
     {
         $data = $request->validate([
-            'status' => 'required|in:Pending,Approved,Rejected', // adjust allowed values if needed
+            // ✅ include Revision Requested as an allowed status
+            'status' => 'required|in:Pending,Under Review,Approved,Rejected,Revision Requested',
+            'progress_stage' => 'nullable|in:Submitted,Under Review,Processing License,Ready for Release,Completed,Revision request,Rejected',
+            'admin_notes' => 'nullable|string|max:2000',
         ]);
 
-        $application->status = $data['status'];
-        $application->save();
+        $application->update([
+            'status' => $data['status'],
+            'progress_stage' => $data['progress_stage'] ?? $application->progress_stage,
+            'admin_notes' => $data['admin_notes'] ?? $application->admin_notes,
+        ]);
 
-        return redirect()->back()->with('success', 'Application status updated.');
+        return redirect()->back()->with('success', 'Application updated successfully.');
     }
 }

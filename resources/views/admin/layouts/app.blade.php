@@ -10,103 +10,177 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
-    /* page background */
-    body { background-color: #f8f9fa; min-height:100vh; }
+    :root {
+      --sidebar-bg: #262e70;
+      --primary-color: #262e70;
+      --page-bg: #f8f9fa;
+      --topbar-bg: #ffffff;
+    }
 
-    /* topbar */
-    .topbar { background: #f2f2f2; border-bottom: 1px solid #e6e6e6; }
+    body {
+      background-color: var(--page-bg);
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    }
 
-    /* sidebar */
+    /* Sidebar */
     .sidebar {
       width: 250px;
-      background-color: #262e70; /* dark blue */
+      background-color: var(--sidebar-bg);
       color: #fff;
       flex-shrink: 0;
       min-height: 100vh;
+      padding-top: 1rem;
     }
-    .sidebar .sidebar-inner { padding: 1rem; }
     .sidebar .nav-link {
       color: rgba(255,255,255,0.95);
-      padding: 10px 14px;
+      padding: 10px 30px;
       border-radius: 6px;
       display: flex;
       align-items: center;
       gap: .6rem;
     }
-    .sidebar .nav-link i { font-size: 1.05rem; width:20px; text-align:center; }
-    .sidebar .nav-link:hover { background-color: rgba(255,255,255,0.06); color:#fff; text-decoration:none; }
-    .sidebar .nav-link.active { background-color: rgba(255,255,255,0.10); font-weight:600; }
+    .sidebar .nav-link i {
+      font-size: 1.25rem;
+      width: 20px;
+      text-align: center;
+    }
+    .sidebar .nav-link:hover {
+      background-color: rgba(255,255,255,0.06);
+      color: #fff;
+      text-decoration: none;
+    }
+    .sidebar .nav-link.active {
+      background-color: rgba(255,255,255,0.10);
+      font-weight: 600;
+    }
 
-    /* logo */
-    .sidebar-logo { text-align:center; padding: 5px 0px; background-color: white}
+    /* Topbar styled like student side */
+    .app-topbar {
+      background: var(--topbar-bg);
+      border-bottom: 1px solid #e9ecef;
+      padding: .5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .app-topbar .logo-wrap img {
+      height: 36px;
+    }
+    .app-topbar .user-btn {
+      background: transparent;
+      border: 0;
+      color: #222;
+      text-decoration: none;
+      display: inline-flex;
+      gap: .5rem;
+      align-items: center;
+    }
 
-    /* main content */
-    .main-content { flex:1; }
-
-    /* primary color override */
+    /* Primary button override */
     .btn-primary {
-      background-color: #262e70;
-      border-color: #262e70;
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
     }
     .btn-primary:hover {
       background-color: #1d245c;
       border-color: #1d245c;
     }
 
-    /* icon circle used in cards */
-    .icon-circle {
-      width:64px; height:64px; border-radius:50%;
-      display:inline-flex; align-items:center; justify-content:center;
-      font-size:1.25rem;
-    }
-
-    /* responsive sidebar: mobile slide-in */
+    /* Responsive sidebar for mobile */
     @media (max-width: 991px) {
-      .sidebar { position: fixed; left: -260px; top:0; transition:left .22s ease; z-index:1045; }
+      .sidebar { position: fixed; left: -260px; top: 0; transition: left .22s ease; z-index: 1045; }
       .sidebar.show { left: 0; }
-      .page-backdrop { position:fixed; inset:0; background: rgba(0,0,0,0.35); z-index:1040; display:none; }
-      .page-backdrop.show { display:block; }
-      .main-content { padding: 1rem; }
+      .page-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        z-index: 1040;
+        display: none;
+      }
+      .page-backdrop.show { display: block; }
     }
-        #successAlert {
-            transition: opacity 0.5s ease;
-        }
-
   </style>
 
   @stack('styles')
 </head>
 <body>
-  <div class="d-flex">
+  <div class="d-flex flex-column" style="min-height: 100vh;">
 
-    <!-- Sidebar -->
+    <!-- Topbar -->
+    <nav class="app-topbar">
+      <div class="d-flex align-items-center">
+        <button id="sidebarToggle" class="btn btn-outline-secondary d-lg-none me-2">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="logo-wrap">
+          <img src="{{ asset('build/assets/images/logo.png') }}" alt="logo">
+        </div>
+      </div>
+      <div class="dropdown">
+        <a class="user-btn dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <span>{{ Auth::user()->name ?? 'Admin' }}</span>
+          <i class="bi bi-chevron-down"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
+          <li>
+            <form method="POST" action="{{ route('admin.logout') }}">
+              @csrf
+              <button type="submit" class="dropdown-item">Logout</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="d-flex flex-grow-1">
+        <!-- Sidebar -->
     <aside id="adminSidebar" class="sidebar">
       <div class="sidebar-inner d-flex flex-column h-100">
-        <div class="sidebar-logo mb-3">
-          <img src="{{ asset('build/assets/images/logo.png') }}" alt="Logo" style="width:120px; height:auto;">
+
+        <!-- Legend at the top -->
+        <div class="px-3 py-2 small fw-bold text-uppercase text-white-50">
+          Administrator Controls
         </div>
+
         <nav class="nav flex-column mb-3">
+
+          <!-- Legend -->
+          <div class="px-3 small text-white-50">Main</div>
           <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="bi bi-house-door-fill"></i> Dashboard / Home
           </a>
 
+          <!-- Legend -->
+          <div class="px-3 small text-white-50">User Management</div>
           <a href="{{ route('admin.applications.index') ?? '#' }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
             <i class="bi bi-people-fill"></i> Accounts
           </a>
 
+          <!-- Legend -->
+          <div class="px-3 small text-white-50">Applications</div>
           <a href="{{ route('admin.applications.index') }}" class="nav-link {{ request()->routeIs('admin.applications.*') ? 'active' : '' }}">
             <i class="bi bi-inbox-fill"></i> Applications
           </a>
 
+          <!-- Legend -->
+          <div class="px-3 small text-white-50">Operations</div>
           <a href="#" class="nav-link"><i class="bi bi-box-arrow-up"></i> Release</a>
           <a href="#" class="nav-link"><i class="bi bi-airplane-fill"></i> Check ride</a>
           <a href="#" class="nav-link"><i class="bi bi-calendar-event"></i> Schedule</a>
+
+          <!-- Legend -->
+          <div class="px-3 small text-white-50">Communication</div>
           <a href="{{ route('admin.announcements.index') }}" class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
-              <i class="bi bi-megaphone-fill"></i> Post Agenda
+            <i class="bi bi-megaphone-fill"></i> Post Agenda
           </a>
 
+          <!-- Legend -->
+          <div class="px-3  small text-white-50">Reports & Settings</div>
           <a href="#" class="nav-link"><i class="bi bi-bar-chart-line-fill"></i> Reports</a>
           <a href="#" class="nav-link"><i class="bi bi-gear-fill"></i> Settings</a>
+
         </nav>
 
         <div class="mt-auto small text-white-50 px-3 pb-3">
@@ -115,41 +189,12 @@
       </div>
     </aside>
 
-    <!-- backdrop for mobile -->
-    <div id="pageBackdrop" class="page-backdrop"></div>
 
-    <!-- Main -->
-    <div class="main-content d-flex flex-column" style="min-height:100vh;">
-      <!-- Topbar -->
-      <nav class="topbar navbar navbar-expand-lg">
-        <div class="container-fluid px-3">
-          <button id="sidebarToggle" class="btn btn-outline-secondary d-lg-none me-2">
-            <i class="bi bi-list"></i>
-          </button>
+      <!-- Backdrop for mobile -->
+      <div id="pageBackdrop" class="page-backdrop"></div>
 
-          <div class="ms-auto d-flex align-items-center">
-            <div class="dropdown">
-              <a class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="me-2">{{ Auth::user()->name ?? 'Admin' }}</span>
-                <i class="bi bi-chevron-down"></i>
-              </a>
-
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
-                <li>
-                  <form method="POST" action="{{ route('admin.logout') }}">
-                    @csrf
-                    <button type="submit" class="dropdown-item">Logout</button>
-                  </form>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <!-- Content area -->
-      <main class="p-4">
+      <!-- Main Content -->
+      <main class="flex-grow-1 p-4">
         @yield('content')
       </main>
     </div>
