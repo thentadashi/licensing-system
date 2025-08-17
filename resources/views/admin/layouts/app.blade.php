@@ -16,16 +16,21 @@
       --page-bg: #f8f9fa;
       --topbar-bg: #ffffff;
     }
-
+    .custom-thead {
+      background-color: rgba(38, 45, 112, 0.952) !important;
+    }
     body {
       background-color: var(--page-bg);
       min-height: 100vh;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     }
+    .tosh_small{
+      font-size: 0.75em; /* Example: 75% of parent font size */
+    }
 
     /* Sidebar */
     .sidebar {
-      width: 250px;
+      width: 220px;
       background-color: var(--sidebar-bg);
       color: #fff;
       flex-shrink: 0;
@@ -149,7 +154,7 @@
           <!-- Legend -->
           <div class="px-3 small text-white-50">Main</div>
           <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <i class="bi bi-house-door-fill"></i> Dashboard / Home
+            <i class="bi bi-house-door-fill"></i> Dashboard
           </a>
 
           <!-- Legend -->
@@ -224,5 +229,6 @@
   </script>
 
   @stack('scripts')
+   @yield('scripts')
 </body>
 </html>

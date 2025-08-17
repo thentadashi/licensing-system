@@ -29,6 +29,8 @@ class ApplicationController extends Controller
         $app->revision_files = json_encode($validated['files']);
         $app->revision_notes = $validated['notes'] ?? null;
         $app->status = 'Revision Requested'; // ✅ changed to new status
+        $app->progress_stage = 'Revision request'; // ✅ changed to new progress stage
+        $app->admin_notes = 'Revision requested by admin. Please upload the requested files to the portal.';
         $app->save();
 
         return back()->with('success', 'Revision request sent to student.');

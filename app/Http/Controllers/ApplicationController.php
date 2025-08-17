@@ -8,7 +8,6 @@ use App\Models\ApplicationExtraField;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ApplicationController extends Controller
 {
@@ -21,6 +20,8 @@ class ApplicationController extends Controller
 
     /**
      * Request a revision for an application.
+     * Allows an admin/instructor to send required files and notes
+     * back to the student for re-uploading.
      */
     public function requestRevision(Request $request, $id)
     {
@@ -41,57 +42,57 @@ class ApplicationController extends Controller
         return back()->with('success', 'Revision request sent to student.');
     }
 
+        /**
+         * Display the authenticated user's applications.
+         */
+        public function application()
+        {
+            $applications = Application::with(['files', 'extraFields'])
+                ->where('user_id', Auth::id())
+                ->latest()
+                ->get();
 
+            $requirements = $this->requirements();
 
-    
-    /**
-     * Display user applications.
-     */
-    public function application()
-    {
-        $applications = Application::with(['files', 'extraFields'])
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->get();
-
-        $requirements = $this->requirements();
-
-        return view('application', compact('applications', 'requirements'));
-    }
+            return view('application', compact('applications', 'requirements'));
+        }
 
     /**
-     * Store a new application.
+     * Store a new application with extra fields and file uploads.
      */
     public function store(Request $request)
     {
-        $requirements = $this->requirements();
-        $type = $request->input('application_type');
+        $map = $this->requirements();
+        $rules = $this->buildValidationRules($map);
 
-        if (!isset($requirements[$type])) {
-            return redirect()->back()
-                ->withErrors(['application_type' => 'Invalid application type'])
-                ->withInput();
-        }
 
-        $rules = $this->buildValidationRules($requirements[$type]);
-        $validated = $request->validate($rules);
+        // ✅ Validate
+        $request->validate($rules);
+        // ✅ Check if application type exists in requirements map
 
+        // ✅ Create application with authenticated user
         $application = Application::create([
             'user_id' => Auth::id(),
-            'application_type' => $type,
-            'status' => self::STATUS_PENDING,
-            'progress_stage' => self::STATUS_SUBMITTED,
+            'application_type' => $request->application_type,
+            'status' => 'Pending',
+            'progress_stage' => 'Submitted',
         ]);
 
-        $this->storeExtraFields($application->id, $request->input('extra', []));
-        $this->storeApplicationFiles($application->id, $requirements[$type]['files'], $request);
+        // ✅ Store uploaded files
+        if ($request->hasFile('files')) {
+            $this->storeApplicationFiles($application, $request->file('files'));
+        }
+            // ✅ Save extra fields (if any)
+        if ($request->has('extra')) {
+            $this->storeExtraFields($application->id, $request->input('extra'));
+        }
 
         return back()->with('success', 'Application submitted successfully!');
     }
 
-    /**
-     * Build dynamic validation rules from the requirements map.
-     */
+/**
+ * Build dynamic validation rules from the requirements map.
+ */
     private function buildValidationRules(array $map): array
     {
         $rules = ['application_type' => 'required|string'];
@@ -149,34 +150,38 @@ class ApplicationController extends Controller
         }
     }
 
-        /**
-         * Store uploaded files for an application.
-         */
-        private function storeApplicationFiles(int $appId, array $fileRequirements, Request $request)
-        {
-            $userId = Auth::id();
+    /**
+     * Store uploaded files for an application.
+     */
+    private function storeApplicationFiles(Application $application, array $files)
+    {
+        $userId = $application->user_id;
+        $appId = $application->id;
 
-            foreach ($fileRequirements as $key => $cfg) {
-                if ($request->hasFile("files.$key")) {
-                    $file = $request->file("files.$key");
-                    $ext = strtolower($file->getClientOriginalExtension());
-                    $filename = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $key) . '.' . $ext;
+        foreach ($files as $key => $file) {
+            if ($file instanceof \Illuminate\Http\UploadedFile) {
+                $ext = strtolower($file->getClientOriginalExtension());
+                $filename = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $key) . '.' . $ext;
 
-                    $path = $file->storeAs("applications/{$userId}/{$appId}", $filename, 'public');
+                // ✅ Store in storage/app/public/applications/{user}/{application}/
+                $path = $file->storeAs("applications/{$userId}/{$appId}", $filename, 'public');
 
-                    ApplicationFile::create([
-                        'application_id' => $appId,
-                        'requirement_key' => $key,
-                        'requirement_label' => $cfg['label'],
-                        'file_path' => $path,
-                        'original_name' => $file->getClientOriginalName(),
-                        'file_type' => $ext,
-                        'file_size' => $file->getSize(),
-                    ]);
-                }
+                ApplicationFile::create([
+                    'application_id'   => $appId,
+                    'requirement_key'  => $key,
+                    'requirement_label'=> ucfirst($key),
+                    'file_path'        => $path,
+                    'original_name'    => $file->getClientOriginalName(),
+                    'file_type'        => $ext,
+                    'file_size'        => $file->getSize(),
+                ]);
             }
         }
+    }
 
+    /**
+     * Allow student to reupload files if revision was requested.
+     */
     public function reupload(Request $request, Application $application)
     {
         // Make sure only the student who owns the application can reupload
@@ -198,9 +203,9 @@ class ApplicationController extends Controller
             }
 
             // Store new file
-            $path = $file->store('applications', 'public');
+            $path = $file->store("applications/{$application->user_id}/{$application->id}", 'public');
 
-            // Generate label from key (you can adjust if you have a config)
+            // Generate label from key
             $label = ucfirst(str_replace('_', ' ', $key));
 
             // Save or update record in application_files table
@@ -213,11 +218,11 @@ class ApplicationController extends Controller
             );
         }
 
-        // Clear revision request info after successful reupload
+        // Reset revision notes after successful reupload
         $application->revision_files = null;
         $application->revision_notes = null;
-        $application->status = 'Pending';
-        $application->progress_stage = 'Submitted';
+        $application->status = self::STATUS_PENDING;
+        $application->progress_stage = self::STATUS_SUBMITTED;
         $application->admin_notes = "Your application has been updated and is awaiting review.";
         $application->touch();
         $application->save();

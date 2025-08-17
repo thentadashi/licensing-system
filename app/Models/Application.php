@@ -20,6 +20,8 @@ class Application extends Model
         'status',
         'progress_stage',
         'admin_notes',
+        'revision_files',
+        'revision_notes',
     ];
 
     public function user()

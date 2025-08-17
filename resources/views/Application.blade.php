@@ -90,6 +90,8 @@
             @endif
         </div>
 
+
+
         <div class="text-end">
             <span class="badge 
                 @if($app->status === 'Approved') bg-success
@@ -107,6 +109,7 @@
             </span>
         </div>
     </div>
+
 
     @php
         $map = [
@@ -129,7 +132,7 @@
             <div>{{ $percent }}%</div>
         </div>
         <div class="progress" style="height:10px;">
-            <div class="progress-bar {{ $isRejected ? 'bg-danger' : 'bg-primary' }}" 
+            <div class="progress-bar progress-bar-striped progress-bar-animated {{ $isRejected ? 'bg-danger' : 'bg-primary' }}" 
                 role="progressbar" 
                 style="width: {{ $percent }}%;"></div>
         </div>

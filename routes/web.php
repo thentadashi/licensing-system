@@ -71,6 +71,7 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::post('/applications/{application}/revision', [StudentApplicationController::class, 'submitRevision'])->name('applications.submitRevision'); // for submitting the revision
     Route::get('/applications/{application}', [StudentApplicationController::class, 'show'])->name('applications.show'); // for viewing a specific application
     Route::post('/applications/{application}/reupload', [ApplicationController::class, 'reupload'])->name('applications.reupload');
+    Route::post('/applications/{application}/extra-fields', [ApplicationController::class, 'storeExtraFields'])->name('applications.storeExtraFields');
 });
 
 // ====================== ADMIN ROUTES ======================
