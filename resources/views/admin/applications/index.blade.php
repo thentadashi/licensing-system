@@ -24,30 +24,30 @@
         </script>
     @endif
 
-    <div class="card shadow-sm border-0">
+    <div class="card shadow-sm">
         <div class="card-body p-3">
             <div class="table-responsive">
                 <table class="table table-hover align-middle" id="applicationsTable">
-                    <thead class="table-light text-muted small">
+                    <thead class="table-light text-muted">
                         <tr>
-                            <th>txn no.</th>
-                            <th>Name</th>
-                            <th>Program</th>
-                            <th>Application Type</th>
-                            <th>Application Date</th>
-                            <th>Last Updated</th>
-                            <th>Status</th>
+                            <th style="width:70px;">app. no.</th>
+                            <th style="width:270px;">Name</th>
+                            <th style="width:100px;">Program</th>
+                            <th style="width:100px;">Type</th>
+                            <th style="width:150px;">Date</th>
+                            <th style="width:150px;">Last Updated</th>
+                            <th style="width:100px;">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="tosh_small">
+                    <tbody>
                         @foreach($applications as $app)
                             <tr class="clickable-row" data-app-id="{{ $app->id }}" style="cursor: pointer;">
                                 <td>{{ $app->id }}</td>
                                 <td>{{ $app->user->name }}</td>
                                 <td>{{ $app->user->program }}</td>
                                 <td>{{ $app->application_type }}</td>
-                                <td>{{ $app->created_at->format('D | M d, Y | h:i A') }}</td>
-                                <td>{{ $app->updated_at->format('D | M d, Y | h:i A') }}</td>
+                                <td class="tosh_small">{{ $app->created_at->format('D | M d, Y | h:i A') }}</td>
+                                <td class="tosh_small">{{ $app->updated_at->format('D | M d, Y | h:i A') }}</td>
                                 <td>
                                     @php
                                         $statusClasses = [

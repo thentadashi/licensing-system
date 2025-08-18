@@ -56,7 +56,7 @@ class AnnouncementController extends Controller
         $request->validate([
             'title'        => 'nullable|string|max:255',
             'content'      => 'nullable|string',
-            'image'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
             'publish_date' => 'nullable|date',
         ]);
 
@@ -88,7 +88,7 @@ class AnnouncementController extends Controller
         $request->validate([
             'title'        => 'nullable|string|max:255',
             'content'      => 'nullable|string',
-            'image'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
             'publish_date' => 'nullable|date',
         ]);
 
