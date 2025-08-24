@@ -60,6 +60,9 @@ class ApplicationController extends Controller
             'status' => $data['status'],
             'progress_stage' => $data['progress_stage'] ?? $application->progress_stage,
             'admin_notes' => $data['admin_notes'] ?? $application->admin_notes,
+            // ✅ clear revision fields if status changed from 'Revision Requested'
+            'revision_files' => $data['status'] === 'Revision Requested' ? $application->revision_files : null,
+            'revision_notes' => $data['status'] === 'Revision Requested' ? $application->revision_notes : null,
         ]);
 
         return redirect()->back()->with('success', 'Application updated successfully.');

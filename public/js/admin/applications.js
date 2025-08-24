@@ -30,10 +30,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const appId = detailRow.id.replace('details-', '');
         const statusSelect = detailRow.querySelector(`select[name="status"]`);
         const progressStage = detailRow.querySelector(`select[name="progress_stage"]`);
-        const adminNotes = detailRow.querySelector(`textarea[name="admin_notes"]`);
+        const adminNotes = detailRow.querySelector(`#admin_notes-${appId}`); // ✅ fixed
         const revisionLink = detailRow.querySelector('.revision-link');
         const updateBtn = detailRow.querySelector('.update-btn');
         const labels = document.querySelector('label[for="progress_stage-' + appId + '"]');
+        const archiveBtn = detailRow.querySelector('.archive-btn');
+        const trashBtn = detailRow.querySelector('.trash-btn');
 
         if(!statusSelect || !progressStage || !adminNotes) return;
 
@@ -46,9 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     adminNotes.value = 'Your application will not proceed until the requested files are uploaded. if the requested files are not uploaded, the application will be rejected.';
                     progressStage.style.display = 'none';
                     updateBtn.style.display = 'none';
-                    adminNotes.style.display = 'none';
                     labels.style.display = 'none';
                     revisionLink.style.display = 'inline-block';
+                    trashBtn.style.display = 'inline-block';
                     break;
 
                 case 'Approved':
@@ -56,6 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     progressStage.style.display = 'block';
                     labels.style.display = 'block';
                     updateBtn.style.display = 'block';
+                    trashBtn.style.display = 'none';
+                    archiveBtn.style.display = 'none';
 
                     // Show only allowed progress options
                     Array.from(progressStage.options).forEach(option => {
@@ -67,21 +71,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         progressStage.value = 'Processing License';
                     }
 
-                    adminNotes.style.display = 'none';
-
                     progressStage.onchange = () => {
                         switch(progressStage.value) {
                             case 'Processing License':
                                 adminNotes.value = 'Your application is being processed for licensing.';
+                                archiveBtn.style.display = 'none';
                                 break;
                             case 'Ready for Release':
                                 adminNotes.value = 'Your application is ready for release.';
+                                archiveBtn.style.display = 'none';
                                 break;
                             case 'Completed':
                                 adminNotes.value = 'Congratulations! Your application has been completed.';
+                                archiveBtn.style.display = 'block';
                                 break;
                             default:
-                                adminNotes.value = '';
+                                adminNotes.value = 'No notes available.';
                         }
                     };
                     break;
@@ -90,8 +95,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     revisionLink.style.display = 'none';
                     progressStage.style.display = 'none';
                     adminNotes.value = 'Your application is currently under review.';
-                    adminNotes.style.display = 'none';
                     updateBtn.style.display = 'block';
+                    trashBtn.style.display = 'none';
+                    archiveBtn.style.display = 'none';
                     break;
 
                 case 'Pending':
@@ -99,8 +105,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     progressStage.style.display = 'none';
                     progressStage.value = 'Submitted';
                     adminNotes.value = 'Your application has been submitted and is awaiting review.';
-                    adminNotes.style.display = 'none';
                     updateBtn.style.display = 'block';
+                    trashBtn.style.display = 'none';
+                    archiveBtn.style.display = 'none';
                     break;
 
                 default: // Rejected or others
@@ -108,8 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     progressStage.style.display = 'none';
                     progressStage.value = 'Rejected';
                     adminNotes.value = 'Your application has been rejected due to missing information or documentation.';
-                    adminNotes.style.display = 'none';
                     updateBtn.style.display = 'block';
+                    trashBtn.style.display = 'none';
+                    archiveBtn.style.display = 'block';
                     break;
             }
         }
@@ -128,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
             form.addEventListener('submit', () => {
                 if(statusSelect.value === 'Revision Requested'){
                     updateBtn.style.display = 'none';
-                    adminNotes.style.display = 'none';
                     revisionLink.style.display = 'inline-block';
                     progressStage.style.display = 'none';
                 }

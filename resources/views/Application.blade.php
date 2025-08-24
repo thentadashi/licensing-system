@@ -58,35 +58,37 @@
                     @endforeach
                 </div>
             @endif
+            @if ($app->status === 'Trashed')
+            @else
+                {{-- Show admin revision request details --}}
+                @if($app->revision_files)
+                    <div class="alert alert-warning mt-3 p-2">
+                        <strong>Revision Required:</strong>
+                        <ul class="mb-1">
+                            @foreach(json_decode($app->revision_files, true) as $file)
+                                <li>{{ ucfirst(str_replace('_', ' ', $file)) }}</li>
+                            @endforeach
+                        </ul>
+                        <p class="mb-2 small">Please ensure to address the notes while uploading the files. <br>Please Review the files before re-uploading</p>
+                        <p></p>
+                        @if($app->revision_notes)
+                            <div><strong>Notes:</strong> {{ $app->revision_notes }}</div>
+                            
+                        @endif
+                    </div>
 
-            {{-- Show admin revision request details --}}
-            @if($app->revision_files)
-                <div class="alert alert-warning mt-3 p-2">
-                    <strong>Revision Required:</strong>
-                    <ul class="mb-1">
+                    {{-- Reupload button --}}
+                    <form action="{{ route('applications.reupload', $app->id) }}" method="POST" enctype="multipart/form-data" class="mt-2">
+                        @csrf
                         @foreach(json_decode($app->revision_files, true) as $file)
-                            <li>{{ ucfirst(str_replace('_', ' ', $file)) }}</li>
+                            <div class="mb-2">
+                                <label class="form-label">{{ ucfirst(str_replace('_', ' ', $file)) }}</label>
+                                <input type="file" name="files[{{ $file }}]" class="form-control" required>
+                            </div>
                         @endforeach
-                    </ul>
-                    <p class="mb-2 small">Please ensure to address the notes while uploading the files. <br>Please Review the files before re-uploading</p>
-                    <p></p>
-                    @if($app->revision_notes)
-                        <div><strong>Notes:</strong> {{ $app->revision_notes }}</div>
-                        
-                    @endif
-                </div>
-
-                {{-- Reupload button --}}
-                <form action="{{ route('applications.reupload', $app->id) }}" method="POST" enctype="multipart/form-data" class="mt-2">
-                    @csrf
-                    @foreach(json_decode($app->revision_files, true) as $file)
-                        <div class="mb-2">
-                            <label class="form-label">{{ ucfirst(str_replace('_', ' ', $file)) }}</label>
-                            <input type="file" name="files[{{ $file }}]" class="form-control" required>
-                        </div>
-                    @endforeach
-                    <button type="submit" class="btn btn-primary btn-sm">Reupload Files</button>
-                </form>
+                        <button type="submit" class="btn btn-primary btn-sm">Reupload Files</button>
+                    </form>
+                @endif
             @endif
         </div>
 
@@ -120,10 +122,13 @@
             'Completed' => 100,
             'Revision request' => 20,
             'Rejected' => 100,
+            'Trashed' => 100,
         ];
         $percent = $map[$app->progress_stage] ?? 0;
         // Check if the status is rejected
-        $isRejected = $app->progress_stage === 'Rejected';
+        $isRejected = $app->progress_stage === 'Rejected'; //red
+        $isTrashed = $app->progress_stage === 'Trashed'; //red
+
     @endphp
 
     <div class="mt-3">
@@ -132,7 +137,7 @@
             <div>{{ $percent }}%</div>
         </div>
         <div class="progress" style="height:10px;">
-            <div class="progress-bar progress-bar-striped progress-bar-animated {{ $isRejected ? 'bg-danger' : 'bg-primary' }}" 
+            <div class="progress-bar progress-bar-striped progress-bar-animated {{ $isRejected ? 'bg-danger' : ($isTrashed ? 'bg-danger' : 'bg-primary') }}" 
                 role="progressbar" 
                 style="width: {{ $percent }}%;"></div>
         </div>
@@ -140,7 +145,7 @@
 
     @if($app->admin_notes)
         <div class="mt-3 small text-muted">
-            <div class="alert @if($app->status === 'Revision Requested') alert-warning @elseif($app->status === 'Rejected') alert-danger @else alert-success @endif">
+            <div class="alert @if($app->status === 'Revision Requested') alert-warning @elseif($app->status === 'Rejected') alert-danger @elseif($app->status === 'Trashed') alert-danger @else alert-success @endif">
                 <strong>Admin note:</strong> {{ $app->admin_notes }}
             </div>
         </div>

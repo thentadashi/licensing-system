@@ -38,7 +38,8 @@ class ApplicationTrashController extends Controller
         // OPTIONAL: visually mark in list (no hard delete)
         $application->update([
             'status' => 'Trashed',
-            'progress_stage' => $application->progress_stage ?? 'Trashed',
+            'progress_stage' => 'Trashed',
+            'admin_notes' => 'This application has been moved to trash due to no action taken.',
         ]);
 
         return back()->with('success', 'Application moved to Trash.');
@@ -52,6 +53,7 @@ class ApplicationTrashController extends Controller
         $app->update([
             'status' => $trash->previous_status ?? 'Pending',
             'progress_stage' => $trash->previous_progress_stage ?? 'Submitted',
+            'admin_notes' => $trash->reason ?? 'No notes',
         ]);
 
         $trash->delete();

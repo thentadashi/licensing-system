@@ -71,101 +71,99 @@
                                 </td>
                             </tr>
 
-                                                    {{-- Hidden detail row --}}
-                            <tr class="app-details-row d-none small" id="details-{{ $app->id }}">
-                                <td colspan="7" class="bg-light p-3">
-                                    {{-- Update Form --}}
-                                    <form method="POST" action="{{ route('admin.applications.update', $app) }}">
-                                        @csrf
-                                        @method('PATCH')
+                          {{-- Hidden detail row --}}
+<tr class="app-details-row d-none small" id="details-{{ $app->id }}">
+    <td colspan="7" class="bg-light p-3">
+        {{-- Update Form --}}
+        <form method="POST" action="{{ route('admin.applications.update', $app) }}">
+            @csrf
+            @method('PATCH')
+            {{-- Files Block --}}
+            <div class="mb-3">
+                <label for="files-{{ $app->id }}" class="form-label fw-semibold mb-1">Files Uploaded</label>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach($app->displayFiles() as $file)
+                        <a href="{{ asset('storage/'.$file['file_path']) }}" target="_blank" class="btn btn-primary btn-sm">
+                            {{ $file['requirement_label'] }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
 
-                                        {{-- Fields in one line --}}
-                                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
-                                            <!-- Files Uploaded -->
-                                            <div>
-                                                <label for="files-{{ $app->id }}" class="form-label fw-semibold mb-1">Files Uploaded</label>
-                                                <div class="d-flex flex-wrap gap-2">
-                                                    @foreach($app->displayFiles() as $file)
-                                                        <a href="{{ asset('storage/'.$file['file_path']) }}" target="_blank" class="btn btn-primary btn-sm">
-                                                            {{ $file['requirement_label'] }}
-                                                        </a>
-                                                    @endforeach
-                                                </div>
-                                            </div>
+            {{-- Status & Stage Block --}}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="status-{{ $app->id }}" class="form-label fw-semibold mb-1">Status</label>
+                    <select id="status-{{ $app->id }}" name="status" class="form-select form-select-sm" {{ $app->status === 'Revision Requested' ? 'disabled' : '' }}>
+                        @foreach(['Pending', 'Under Review', 'Approved', 'Rejected', 'Revision Requested'] as $status)
+                            <option value="{{ $status }}" {{ $app->status === $status ? 'selected' : '' }}>{{ $status }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="progress_stage-{{ $app->id }}" class="form-label fw-semibold mb-1">Stage</label>
+                    <select id="progress_stage-{{ $app->id }}" name="progress_stage" class="form-select form-select-sm">
+                        @foreach(['Submitted', 'Under Review', 'Processing License', 'Ready for Release', 'Completed', 'Revision request', 'Rejected'] as $stage)
+                            <option value="{{ $stage }}" {{ $app->progress_stage === $stage ? 'selected' : '' }}>
+                                {{ $stage }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
 
-                                            <!-- Status -->
-                                            <div>
-                                                <label for="status-{{ $app->id }}" class="form-label fw-semibold mb-1">Status</label>
-                                                <select id="status-{{ $app->id }}" name="status" class="form-select form-select-sm" {{ $app->status === 'Revision Requested' ? 'disabled' : '' }}>
-                                                    @foreach(['Pending', 'Under Review', 'Approved', 'Rejected', 'Revision Requested'] as $status)
-                                                        <option value="{{ $status }}" {{ $app->status === $status ? 'selected' : '' }}>{{ $status }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+            {{-- Extra Details Block --}}
+            @if($app->extraFields->count())
+                <div class="mb-3">
+                    <label for="extra-{{ $app->id }}" class="form-label fw-semibold mb-1">Extra Details</label>
+                    <ul class="mb-0 ps-3">
+                        @foreach($app->extraFields as $ef)
+                            <li><strong>{{ ucfirst(str_replace('_', ' ', $ef->field_name)) }}:</strong> {{ $ef->field_value }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            
+            {{-- Admin Notes Block --}}
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-3" style="display: none;">
+                <div class="flex-fill">
+                    <label for="admin_notes-{{ $app->id }}" class="form-label fw-semibold mb-1">Notes</label>
+                    <textarea id="admin_notes-{{ $app->id }}" name="admin_notes" class="form-control form-control-sm admin-notes" rows="1">{{ old('admin_notes', $app->admin_notes) }}</textarea>
+                </div>
+            </div>
 
-                                            <!-- Stage -->
-                                            <div>
-                                                <label for="progress_stage-{{ $app->id }}" class="form-label fw-semibold mb-1">Stage</label>
-                                                <select id="progress_stage-{{ $app->id }}" name="progress_stage" class="form-select form-select-sm">
-                                                    @foreach(['Submitted', 'Under Review', 'Processing License', 'Ready for Release', 'Completed', 'Revision request', 'Rejected'] as $stage)
-                                                        <option value="{{ $stage }}" {{ $app->progress_stage === $stage ? 'selected' : '' }}>
-                                                            {{ $stage }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+            {{-- Action Buttons Block --}}
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <button class="btn btn-primary btn-sm update-btn" type="submit">Update</button>
+                <a href="{{ route('admin.applications.show', $app->id) }}"
+                   class="btn btn-primary btn-sm revision-link {{$app->status === 'Revision Requested'}}">
+                    <i class="bi bi-eye"></i> View / Send Revision
+                </a>
+            </div>
+        </form>
 
-                                            {{-- Extra Fields --}}
-                                            @if($app->extraFields->count())
-                                                <div>
-                                                    <label for="extra-{{ $app->id }}" class="form-label fw-semibold mb-1">Extra Details</label>
-                                                    @foreach($app->extraFields as $ef)
-                                                        <div><strong>{{ ucfirst(str_replace('_', ' ', $ef->field_name)) }}:</strong> {{ $ef->field_value }}</div>
-                                                    @endforeach
-                                                </div>
-                                            @endif
+        {{-- Archive / Trash Block --}}
+        @if(!$app->archive && !$app->trash)
+            <div class="d-flex align-items-center gap-2">
+                <form action="{{ route('admin.applications.archive', $app) }}" method="POST" class="d-inline">
+                    @csrf
+                        <button type="submit" class="btn btn-outline-secondary btn-sm archive-btn"
+                            onclick="return confirm('Archive this application? You can unarchive later.');">
+                            <i class="bi bi-archive"></i> Archive
+                        </button>
+                </form>
 
-                                            <!-- Action Buttons -->
-                                            <div class="d-flex align-items-center gap-2 mt-2">
-                                                <button class="btn btn-primary btn-sm update-btn" type="submit">Update</button>
-                                                <a href="{{ route('admin.applications.show', $app->id) }}"
-                                                    class="btn btn-primary btn-sm revision-link {{$app->status === 'Revision Requested'}}">
-                                                    <i class="bi bi-eye"></i> View / Send Revision
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </form>
-
-                                    {{-- Archive / Trash forms must be OUTSIDE the update form --}}
-                                    @if(!$app->archive && !$app->trash)
-                                        <div class="d-flex align-items-center gap-2 mt-2">
-                                            <form action="{{ route('admin.applications.archive', $app) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-outline-secondary btn-sm"
-                                                    onclick="return confirm('Archive this application? You can unarchive later.');">
-                                                    <i class="bi bi-archive"></i> Archive
-                                                </button>
-                                            </form>
-
-                                            <form action="{{ route('admin.applications.trash', $app) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-outline-danger btn-sm"
-                                                    onclick="return confirm('Move to Trash? You can restore from Trash, or delete permanently there.');">
-                                                    <i class="bi bi-trash"></i> Trash
-                                                </button>
-                                            </form>
-                                        </div>
-                                    @endif
-
-                                    {{-- Notes (hidden) --}}
-                                    <div class="d-flex flex-wrap align-items-center gap-3 mb-3" style="display: none">
-                                        <div class="flex-fill" style="display: none">
-                                            <label for="admin_notes-{{ $app->id }}" class="form-label fw-semibold mb-1">Notes</label>
-                                            <textarea id="admin_notes-{{ $app->id }}" name="admin_notes" class="form-control form-control-sm" rows="1">{{ old('admin_notes', $app->admin_notes) }}</textarea>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                <form action="{{ route('admin.applications.trash', $app) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger btn-sm trash-btn"
+                        onclick="return confirm('Move to Trash? You can restore from Trash, or delete permanently there.');">
+                        <i class="bi bi-trash"></i> Trash
+                    </button>
+                </form>
+            </div>
+        @endif
+    </td>
+</tr>
 
 
                         @endforeach

@@ -23,7 +23,7 @@
                             <th>Program</th>
                             <th>Application Type</th>
                             <th>Trashed At</th>
-                            <th>Reason</th>
+                            <th>Prev. Note</th>
                             <th>Prev. Status</th>
                             <th>Prev. Progress</th>
                             <th class="text-end">Actions</th>
