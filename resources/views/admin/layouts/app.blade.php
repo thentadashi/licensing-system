@@ -159,15 +159,37 @@
 
           <!-- Legend -->
           <div class="px-3 small text-white-50">User Management</div>
-          <a href="{{ route('admin.applications.index') ?? '#' }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+          <a href="{{ route('students.index') ?? '#' }}" class="nav-link {{ request()->routeIs('students.*') ? 'active' : '' }}">
             <i class="bi bi-people-fill"></i> Accounts
           </a>
 
-          <!-- Legend -->
           <div class="px-3 small text-white-50">Applications</div>
-          <a href="{{ route('admin.applications.index') }}" class="nav-link {{ request()->routeIs('admin.applications.*') ? 'active' : '' }}">
-            <i class="bi bi-inbox-fill"></i> Applications
+
+          <!-- Applications with Dropdown -->
+          <a class="nav-link d-flex justify-content-between align-items-center" 
+            data-bs-toggle="collapse" 
+            href="#applicationsMenu" 
+            role="button" 
+            aria-expanded="false" 
+            aria-controls="applicationsMenu">
+            <span><i class="bi bi-inbox-fill me-2"></i> Applications</span>
+            <i class="bi bi-chevron-down small"></i>
           </a>
+
+          <div class="collapse ps-4 {{ request()->routeIs('admin.applications.*') ? 'show' : '' }}" id="applicationsMenu">
+            <a class="nav-link {{ request()->routeIs('admin.applications.index') ? 'active' : '' }}" 
+              href="{{ route('admin.applications.index') }}">
+              <i class="bi bi-folder me-2"></i> All Applications
+            </a>
+            <a class="nav-link {{ request()->routeIs('admin.applications.archives.*') ? 'active' : '' }}" 
+              href="{{ route('admin.applications.archives.index') }}">
+              <i class="bi bi-archive me-2"></i> Archives
+            </a>
+            <a class="nav-link {{ request()->routeIs('admin.applications.trash.*') ? 'active' : '' }}" 
+              href="{{ route('admin.applications.trash.index') }}">
+              <i class="bi bi-trash me-2"></i> Trash
+            </a>
+          </div>
 
           <!-- Legend -->
           <div class="px-3 small text-white-50">Operations</div>

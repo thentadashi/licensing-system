@@ -15,7 +15,7 @@
             <input type="email" name="email" value="{{ old('email', $student->email) }}" class="form-control" required>
         </div>
         <button class="btn btn-success">Update</button>
-        <a href="{{ route('admin.students.index') }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{ route('students.index') }}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 @endsection

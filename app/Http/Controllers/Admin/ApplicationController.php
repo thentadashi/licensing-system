@@ -10,8 +10,14 @@ class ApplicationController extends Controller
 {
     public function index(Request $request)
     {
-        $applications = Application::with(['user', 'files', 'extraFields'])->latest()->paginate(10);
+        $applications = Application::with(['user', 'files', 'extraFields', 'archive', 'trash'])
+            ->whereDoesntHave('trash') // ✅ exclude trashed applications
+            ->where('archive_status', 0) // ✅ exclude archived applications
+            ->latest()
+            ->paginate(10);
+
         $userRole = auth()->user()->role;
+
         return view('admin.applications.index', compact('applications', 'userRole'));
     }
 

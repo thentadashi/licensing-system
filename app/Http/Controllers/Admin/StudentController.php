@@ -26,12 +26,12 @@ class StudentController extends Controller
             'email' => 'required|email|unique:users,email,' . $student->id,
         ]);
         $student->update($request->only('name', 'email'));
-        return redirect()->route('admin.students.index')->with('success', 'Student updated!');
+        return redirect()->route('students.index')->with('success', 'Student updated!');
     }
 
     public function destroy(User $student)
     {
         $student->delete();
-        return redirect()->route('admin.students.index')->with('success', 'Student deleted!');
+        return redirect()->route('students.index')->with('success', 'Student deleted!');
     }
 }

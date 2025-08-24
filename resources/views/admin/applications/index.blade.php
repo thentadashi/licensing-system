@@ -74,6 +74,7 @@
                                                     {{-- Hidden detail row --}}
                             <tr class="app-details-row d-none small" id="details-{{ $app->id }}">
                                 <td colspan="7" class="bg-light p-3">
+                                    {{-- Update Form --}}
                                     <form method="POST" action="{{ route('admin.applications.update', $app) }}">
                                         @csrf
                                         @method('PATCH')
@@ -113,9 +114,11 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+
+                                            {{-- Extra Fields --}}
                                             @if($app->extraFields->count())
                                                 <div>
-                                                <label for="extra-{{ $app->id }}" class="form-label fw-semibold mb-1">Extra Details</label>
+                                                    <label for="extra-{{ $app->id }}" class="form-label fw-semibold mb-1">Extra Details</label>
                                                     @foreach($app->extraFields as $ef)
                                                         <div><strong>{{ ucfirst(str_replace('_', ' ', $ef->field_name)) }}:</strong> {{ $ef->field_value }}</div>
                                                     @endforeach
@@ -129,23 +132,41 @@
                                                     class="btn btn-primary btn-sm revision-link {{$app->status === 'Revision Requested'}}">
                                                     <i class="bi bi-eye"></i> View / Send Revision
                                                 </a>
-                                                @if($userRole === 'super_admin')
-                                                    <a href="{{ route('admin.students.index') }}" class="btn btn-warning btn-sm">Manage Users</a>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        {{-- Notes and Extra Fields in one line --}}
-                                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3" style="display: none">
-                                            <!-- Notes -->
-                                            <div class="flex-fill" style="display: none">
-                                                <label for="admin_notes-{{ $app->id }}" class="form-label fw-semibold mb-1">Notes</label>
-                                                <textarea id="admin_notes-{{ $app->id }}" name="admin_notes" class="form-control form-control-sm" rows="1">{{ old('admin_notes', $app->admin_notes) }}</textarea>
                                             </div>
                                         </div>
                                     </form>
+
+                                    {{-- Archive / Trash forms must be OUTSIDE the update form --}}
+                                    @if(!$app->archive && !$app->trash)
+                                        <div class="d-flex align-items-center gap-2 mt-2">
+                                            <form action="{{ route('admin.applications.archive', $app) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm"
+                                                    onclick="return confirm('Archive this application? You can unarchive later.');">
+                                                    <i class="bi bi-archive"></i> Archive
+                                                </button>
+                                            </form>
+
+                                            <form action="{{ route('admin.applications.trash', $app) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                    onclick="return confirm('Move to Trash? You can restore from Trash, or delete permanently there.');">
+                                                    <i class="bi bi-trash"></i> Trash
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @endif
+
+                                    {{-- Notes (hidden) --}}
+                                    <div class="d-flex flex-wrap align-items-center gap-3 mb-3" style="display: none">
+                                        <div class="flex-fill" style="display: none">
+                                            <label for="admin_notes-{{ $app->id }}" class="form-label fw-semibold mb-1">Notes</label>
+                                            <textarea id="admin_notes-{{ $app->id }}" name="admin_notes" class="form-control form-control-sm" rows="1">{{ old('admin_notes', $app->admin_notes) }}</textarea>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
+
 
                         @endforeach
                     </tbody>

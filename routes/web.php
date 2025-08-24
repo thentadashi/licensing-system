@@ -12,6 +12,10 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\ApplicationController as StudentApplicationController;
+use App\Http\Controllers\Admin\ApplicationArchiveController as AdminApplicationArchiveController;
+use App\Http\Controllers\Admin\ApplicationTrashController as AdminApplicationTrashController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -62,8 +66,6 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');  // for viewing the profile edit page
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // for updating the profile
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');      // for deleting the profile
-    Route::put('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');    // for resetting the password
-    Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset'); // for viewing the reset password page
     Route::get('/downloadable-forms', function () {return view('downloadable-forms');})->name('downloadable-forms'); // for viewing the downloadable forms
     Route::get('/license-requirements', function () {return view('license-requirements');})->name('license-requirements'); // for viewing the license requirements
     Route::get('/announcements', [AdminDashboardController::class, 'announcements'])->name('announcements'); // for viewing announcements
@@ -84,16 +86,28 @@ Route::middleware(['auth', 'role:super_admin'])
         })->name('admin.settings');
 
         // Student management routes
-        Route::get('/admin/students', [StudentController::class, 'index'])->name('admin.students.index');       
+        Route::get('/students', [StudentController::class, 'index'])->name('admin.students.index');       
         Route::resource('students', StudentController::class)->except(['create', 'store', 'show']);
-        Route::get('admin/students/{student}/edit', [StudentController::class, 'edit'])->name('admin.students.edit');
-        Route::delete('admin/students/{student}', [AdminStudentController::class, 'destroy'])->name('admin.students.destroy');
+        Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('admin.students.edit');
+        Route::put('/students/{student}', [StudentController::class, 'update'])->name('admin.students.update');
+        Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('admin.students.destroy');
     });
 
 // Super Admin & Clerk
-Route::middleware(['auth', 'role:super_admin,clerk'])
+Route::middleware(['auth', 'role:super_admin, clerk'])
     ->prefix('admin')
     ->group(function () {
+        // Archive routes
+        Route::get('/applications/archives', [AdminApplicationArchiveController::class, 'index'])->name('admin.applications.archives.index');
+        Route::post('/applications/{application}/archive', [AdminApplicationArchiveController::class, 'store'])->name('admin.applications.archive');
+        Route::delete('/applications/archives/{archive}', [AdminApplicationArchiveController::class, 'destroy'])->name('admin.applications.archives.unarchive');
+        Route::post('/applications/archives/{archive}/restore', [AdminApplicationArchiveController::class, 'restore'])->name('admin.applications.archives.restore');
+        // Trash routes
+        Route::get('/applications/trash', [AdminApplicationTrashController::class, 'index'])->name('admin.applications.trash.index');
+        Route::post('/applications/{application}/trash', [AdminApplicationTrashController::class, 'store'])->name('admin.applications.trash');
+        Route::post('/applications/trash/{trash}/restore', [AdminApplicationTrashController::class, 'restore'])->name('admin.applications.trash.restore');
+        Route::delete('/applications/trash/{trash}', [AdminApplicationTrashController::class, 'destroy'])->name('admin.applications.trash.destroy');
+
         Route::get('/applications', [AdminApplicationController::class, 'index'])->name('admin.applications.index');   
         Route::patch('/applications/{application}', [AdminApplicationController::class, 'update'])->name('admin.applications.update');
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
@@ -109,4 +123,8 @@ Route::middleware(['auth', 'role:super_admin,clerk'])
         Route::patch('/announcements/{announcement}/toggle', [AnnouncementController::class, 'toggleVisibility'])->name('admin.announcements.toggle');
         Route::post('/applications/{application}/revision', [AdminApplicationController::class, 'requestRevision'])->name('admin.applications.requestRevision');
         Route::get('/applications/{application}', [AdminApplicationController::class, 'show'])->name('admin.applications.show');
+
+
     });
+
+    

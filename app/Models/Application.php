@@ -22,6 +22,7 @@ class Application extends Model
         'admin_notes',
         'revision_files',
         'revision_notes',
+        'archive_status', // ✅ new
     ];
 
     public function user()
@@ -93,4 +94,17 @@ class Application extends Model
 
         return $list;
     }
+    public function archive()
+    {
+        return $this->hasOne(\App\Models\ApplicationArchive::class);
+    }
+
+    public function trash()
+    {
+        return $this->hasOne(\App\Models\ApplicationTrash::class);
+    }
+        protected $casts = [
+        'archive_status' => 'boolean',
+    ];
+
 }
