@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Application;
+use App\Notifications\ApplicationStatusChanged;
 
 class ApplicationController extends Controller
 {
@@ -49,6 +50,9 @@ class ApplicationController extends Controller
 
     public function update(Request $request, Application $application)
     {
+        // Get the old status
+        $old = $application->getOriginal('status')->value;
+
         $data = $request->validate([
             // ✅ include Revision Requested as an allowed status
             'status' => 'required|in:Pending,Under Review,Approved,Rejected,Revision Requested',
@@ -64,6 +68,17 @@ class ApplicationController extends Controller
             'revision_files' => $data['status'] === 'Revision Requested' ? $application->revision_files : null,
             'revision_notes' => $data['status'] === 'Revision Requested' ? $application->revision_notes : null,
         ]);
+
+        // Notify user
+        if ($old !== $application->status->value) {
+            $application->user->notify(
+                new ApplicationStatusChanged(
+                    $application,
+                    $old,
+                    $application->status->value
+                )
+            );
+        }
 
         return redirect()->back()->with('success', 'Application updated successfully.');
     }

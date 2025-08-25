@@ -8,6 +8,7 @@ use App\Models\ApplicationExtraField;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\ApplicationSubmitted;
 
 class ApplicationController extends Controller
 {
@@ -77,7 +78,8 @@ class ApplicationController extends Controller
             'status' => 'Pending',
             'progress_stage' => 'Submitted',
         ]);
-
+        // Notify user
+        $request->user()->notify(new ApplicationSubmitted());
         // ✅ Store uploaded files
         if ($request->hasFile('files')) {
             $this->storeApplicationFiles($application, $request->file('files'));

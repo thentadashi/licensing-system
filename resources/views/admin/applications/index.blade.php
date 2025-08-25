@@ -55,18 +55,17 @@
                                             'Rejected' => 'bg-danger',
                                             'Revision Requested' => 'bg-warning text-dark',
                                         ];
-                                        $badgeClass = $statusClasses[$app->status] ?? 'bg-secondary';
+
+                                        $badgeClass = $statusClasses[$app->status->value] ?? 'bg-secondary';
                                     @endphp
+
                                     <span class="badge {{ $badgeClass }} text-uppercase" style="font-size: 0.75rem;">
-                                        @if ($app->progress_stage === 'Completed')
-                                            Completed
-                                        @elseif ($app->progress_stage === 'Ready for Release')
-                                            Ready for Release
-                                        @elseif ($app->progress_stage === 'Processing License')
-                                            Processing License
-                                        @else
-                                            {{ $app->status }}
-                                        @endif
+                                        @switch($app->progress_stage)
+                                            @case('Completed') Completed @break
+                                            @case('Ready for Release') Ready for Release @break
+                                            @case('Processing License') Processing License @break
+                                            @default {{ $app->status->value }}
+                                        @endswitch
                                     </span>
                                 </td>
                             </tr>

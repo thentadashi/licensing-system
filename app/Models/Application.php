@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use App\Enums\ApplicationStatus;
+use App\Enums\ProgressStage;
 
 class Application extends Model
 {
@@ -105,6 +107,9 @@ class Application extends Model
     }
         protected $casts = [
         'archive_status' => 'boolean',
+        'revision_files' => 'array',
+        'status' => ApplicationStatus::class,
+        'progress_stage' => ProgressStage::class,
     ];
 
 }

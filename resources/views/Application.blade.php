@@ -41,7 +41,7 @@
     <div class="d-flex justify-content-between align-items-start">
         <div>
             <h5 class="card-title mb-1">{{ $app->application_type }}</h5>
-            <div class="small text-muted">Submitted: {{ $app->created_at->format('M d, Y H:i') }} |  Date Reviewed: {{ $app->updated_at->format('M d, Y h:i') }}</div>
+            <div class="small text-muted">Submitted: {{ $app->created_at->format('M d, Y h:i') }} |  Date Reviewed: {{ $app->updated_at->format('M d, Y h:i') }}</div>
 
             <div class="mt-2 d-flex flex-wrap gap-2">
                 @foreach($app->displayFiles() as $f)
@@ -124,20 +124,21 @@
             'Rejected' => 100,
             'Trashed' => 100,
         ];
-        $percent = $map[$app->progress_stage] ?? 0;
-        // Check if the status is rejected
-        $isRejected = $app->progress_stage === 'Rejected'; //red
-        $isTrashed = $app->progress_stage === 'Trashed'; //red
 
+        $percent = $map[$app->progress_stage->value] ?? 0;
+
+        $isRejected = $app->progress_stage->value === 'Rejected';
+        $isTrashed = $app->progress_stage->value === 'Trashed';
     @endphp
 
     <div class="mt-3">
         <div class="d-flex justify-content-between small mb-1">
-            <div>{{ $app->progress_stage }}</div>
+            <div>{{ $app->progress_stage->value }}</div>
             <div>{{ $percent }}%</div>
         </div>
         <div class="progress" style="height:10px;">
-            <div class="progress-bar progress-bar-striped progress-bar-animated {{ $isRejected ? 'bg-danger' : ($isTrashed ? 'bg-danger' : 'bg-primary') }}" 
+            <div class="progress-bar progress-bar-striped progress-bar-animated 
+                {{ $isRejected ? 'bg-danger' : ($isTrashed ? 'bg-danger' : 'bg-primary') }}" 
                 role="progressbar" 
                 style="width: {{ $percent }}%;"></div>
         </div>
@@ -145,12 +146,18 @@
 
     @if($app->admin_notes)
         <div class="mt-3 small text-muted">
-            <div class="alert @if($app->status === 'Revision Requested') alert-warning @elseif($app->status === 'Rejected') alert-danger @elseif($app->status === 'Trashed') alert-danger @else alert-success @endif">
+            <div class="alert 
+                @if($app->status->value === 'Revision Requested') alert-warning 
+                @elseif($app->status->value === 'Rejected') alert-danger 
+                @elseif($app->status->value === 'Trashed') alert-danger 
+                @else alert-success 
+                @endif">
                 <strong>Admin note:</strong> {{ $app->admin_notes }}
             </div>
         </div>
     @endif
-</div>
+
+        </div>
         </div>
     @empty
         <div class="alert alert-info">You have no applications yet.</div>
