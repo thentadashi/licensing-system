@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateBtn.style.display = 'block';
                     trashBtn.style.display = 'none';
                     archiveBtn.style.display = 'none';
+                    adminNotes.value = 'Your application is being processed for licensing.';
 
                     // Show only allowed progress options
                     Array.from(progressStage.options).forEach(option => {

@@ -23,6 +23,7 @@
                             <th>Program</th>
                             <th>Application Type</th>
                             <th>Trashed At</th>
+                            <th>Trashed by</th>
                             <th>Prev. Note</th>
                             <th>Prev. Status</th>
                             <th>Prev. Progress</th>
@@ -36,6 +37,7 @@
                                 <td>{{ $t->application->user->program }}</td>
                                 <td>{{ $t->application->application_type }}</td>
                                 <td>{{ $t->created_at->format('M d, Y h:i A') }}</td>
+                                <td>{{ $t->trashedBy->name ?? '—' }}</td>
                                 <td class="text-truncate" style="max-width:240px;">{{ $t->reason }}</td>
                                 <td><span class="badge bg-secondary">{{ $t->previous_status ?? '—' }}</span></td>
                                 <td>{{ $t->previous_progress_stage ?? '—' }}</td>

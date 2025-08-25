@@ -32,7 +32,7 @@ class ApplicationTrashController extends Controller
             'trashed_by' => $request->user()->id,
             'previous_status' => $application->status,
             'previous_progress_stage' => $application->progress_stage,
-            'reason' => $request->input('reason'),
+            'reason' => $application->admin_notes ?? 'No reason provided',
         ]);
 
         // OPTIONAL: visually mark in list (no hard delete)

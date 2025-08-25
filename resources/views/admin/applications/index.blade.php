@@ -26,7 +26,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body p-3">
-            <div class="table-responsive">
+            <div class="table-responsive rounded">
                 <table class="table table-hover align-middle" id="applicationsTable">
                     <thead class="table-light text-muted">
                         <tr>
@@ -101,7 +101,7 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="progress_stage-{{ $app->id }}" class="form-label fw-semibold mb-1">Stage</label>
+                    <label for="progress_stage-{{ $app->id }}" class="form-label fw-semibold mb-1">Progress Stage</label>
                     <select id="progress_stage-{{ $app->id }}" name="progress_stage" class="form-select form-select-sm">
                         @foreach(['Submitted', 'Under Review', 'Processing License', 'Ready for Release', 'Completed', 'Revision request', 'Rejected'] as $stage)
                             <option value="{{ $stage }}" {{ $app->progress_stage === $stage ? 'selected' : '' }}>
@@ -123,7 +123,7 @@
                     </ul>
                 </div>
             @endif
-            
+
             {{-- Admin Notes Block --}}
             <div class="d-flex flex-wrap align-items-center gap-3 mb-3" style="display: none;">
                 <div class="flex-fill">
