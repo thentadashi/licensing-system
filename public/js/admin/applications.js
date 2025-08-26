@@ -99,6 +99,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateBtn.style.display = 'block';
                     trashBtn.style.display = 'none';
                     archiveBtn.style.display = 'none';
+                    statusSelect.value = 'Under Review';
+                    progressStage.value = 'Under Review';
                     break;
 
                 case 'Pending':
