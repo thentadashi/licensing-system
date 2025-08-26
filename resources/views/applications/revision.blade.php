@@ -1,24 +1,44 @@
 @extends('layouts.app')
 
 @section('content')
-<h4>Upload Requested Files</h4>
+<div class="container">
 
-@if($application->revision_notes)
-    <div class="alert alert-warning">
-        <strong>Notes from Admin:</strong> {{ $application->revision_notes }}
-    </div>
-@endif
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-light fw-semibold">📤 Upload Requested Files</div>
+        <div class="card-body">
 
-<form action="{{ route('applications.submitRevision', $application->id) }}" method="POST" enctype="multipart/form-data">
-    @csrf
+            @if($application->revision_notes)
+                <div class="alert alert-warning">
+                    <strong>Notes from Admin:</strong> {{ $application->revision_notes }}
+                </div>
+            @endif
 
-    @foreach(json_decode($application->revision_files, true) as $fileField)
-        <div class="mb-3">
-            <label>{{ ucfirst(str_replace('_', ' ', $fileField)) }}</label>
-            <input type="file" name="{{ $fileField }}" class="form-control" required>
+            <form action="{{ route('applications.submitRevision', $application->id) }}" 
+                  method="POST" enctype="multipart/form-data">
+                @csrf
+
+                @foreach($application->revision_files ?? [] as $fileField)
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ ucfirst(str_replace('_', ' ', $fileField)) }}</label>
+                        <div class="input-group">
+                            <input type="file" name="files[{{ $fileField }}]" 
+                                class="form-control file-input" required>
+                            <label class="input-group-text bg-primary text-white">
+                                <i class="bi bi-upload"></i>
+                            </label>
+                        </div>
+                    </div>
+                @endforeach
+
+
+                <a href="{{ route('applications') }}" class="btn btn-secondary">Back to Applications</a>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send me-1"></i> Submit Revision
+                </button>
+            </form>
         </div>
-    @endforeach
+    </div>
 
-    <button type="submit" class="btn btn-primary">Submit Revision</button>
-</form>
+</div>
 @endsection

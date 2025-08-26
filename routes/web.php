@@ -60,20 +60,28 @@ Route::post('/email/verification-notification', function (Request $request) {
 // ====================== STUDENT ROUTES (EMAIL VERIFIED ONLY) ======================
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('/dashboard', [dashboardController::class, 'dashboard'])->name('dashboard'); // for viewing the dashboard
+
     Route::get('/application', [ApplicationController::class, 'application'])->name('application'); // for viewing the page
     Route::post('/application', [ApplicationController::class, 'store'])->name('applications.store'); // for submitting the form
     Route::get('/applications', [ApplicationController::class, 'application'])->name('applications'); // for viewing the applications
+    Route::post('/applications/{application}/extra-fields', [ApplicationController::class, 'storeExtraFields'])->name('applications.storeExtraFields');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');  // for viewing the profile edit page
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // for updating the profile
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');      // for deleting the profile
+
     Route::get('/downloadable-forms', function () {return view('downloadable-forms');})->name('downloadable-forms'); // for viewing the downloadable forms
     Route::get('/license-requirements', function () {return view('license-requirements');})->name('license-requirements'); // for viewing the license requirements
+
     Route::get('/announcements', [AdminDashboardController::class, 'announcements'])->name('announcements'); // for viewing announcements
+
     Route::get('/applications/{application}/revision', [StudentApplicationController::class, 'showRevisionForm'])->name('applications.showRevisionForm'); // for showing the revision form
-    Route::post('/applications/{application}/revision', [StudentApplicationController::class, 'submitRevision'])->name('applications.submitRevision'); // for submitting the revision
+    Route::post('/applications/{application}', [ApplicationController::class, 'submitRevision'])->name('applications.submitRevision');
     Route::get('/applications/{application}', [StudentApplicationController::class, 'show'])->name('applications.show'); // for viewing a specific application
     Route::post('/applications/{application}/reupload', [ApplicationController::class, 'reupload'])->name('applications.reupload');
-    Route::post('/applications/{application}/extra-fields', [ApplicationController::class, 'storeExtraFields'])->name('applications.storeExtraFields');
+
+
+
 });
 
 // ====================== ADMIN ROUTES ======================

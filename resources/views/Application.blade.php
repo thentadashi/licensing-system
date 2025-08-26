@@ -65,8 +65,8 @@
                     <div class="alert alert-warning mt-3 p-2">
                         <strong>Revision Required:</strong>
                         <ul class="mb-1">
-                            @foreach(json_decode($app->revision_files, true) as $file)
-                                <li>{{ ucfirst(str_replace('_', ' ', $file)) }}</li>
+                            @foreach($app->revision_files ?? [] as $file)
+                                <li>{{ ucfirst(str_replace('_',' ',$file)) }}</li>
                             @endforeach
                         </ul>
                         <p class="mb-2 small">Please ensure to address the notes while uploading the files. <br>Please Review the files before re-uploading</p>
@@ -80,7 +80,7 @@
                     {{-- Reupload button --}}
                     <form action="{{ route('applications.reupload', $app->id) }}" method="POST" enctype="multipart/form-data" class="mt-2">
                         @csrf
-                        @foreach(json_decode($app->revision_files, true) as $file)
+                        @foreach($app->revision_files ?? [] as $file)
                             <div class="mb-2">
                                 <label class="form-label">{{ ucfirst(str_replace('_', ' ', $file)) }}</label>
                                 <input type="file" name="files[{{ $file }}]" class="form-control" required>
@@ -114,26 +114,28 @@
 
 
     @php
+        // Map stages to percentage
         $map = [
-            'Submitted' => 10,
-            'Under Review' => 40,
-            'Processing License' => 70,
-            'Ready for Release' => 90,
-            'Completed' => 100,
-            'Revision request' => 20,
-            'Rejected' => 100,
-            'Trashed' => 100,
+            'Submitted'             => 10,
+            'Under Review'          => 40,
+            'Processing License'    => 70,
+            'Ready for Release'     => 90,
+            'Completed'             => 100,
+            'Revision request'      => 20,
+            'Rejected'              => 100,
+            'Trashed'               => 100,
         ];
 
-        $percent = $map[$app->progress_stage->value] ?? 0;
+        $stage = $app->progress_stage->value;           // string
+        $percent = $map[$stage] ?? 0;                     // array
 
-        $isRejected = $app->progress_stage->value === 'Rejected';
-        $isTrashed = $app->progress_stage->value === 'Trashed';
+        $isRejected = $stage === 'Rejected';
+        $isTrashed = $stage === 'Trashed';
     @endphp
 
     <div class="mt-3">
         <div class="d-flex justify-content-between small mb-1">
-            <div>{{ $app->progress_stage->value }}</div>
+            <div>{{ $stage }}</div>
             <div>{{ $percent }}%</div>
         </div>
         <div class="progress" style="height:10px;">
@@ -156,6 +158,17 @@
             </div>
         </div>
     @endif
+    
+    <div class="d-flex justify-content-end">
+        <div class="mt-2 d-flex gap-2">
+            @if($app->revision_files)
+                <a href="{{ route('applications.showRevisionForm', $app->id) }}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-pencil-square"></i> Fix & Reupload
+                </a>
+            @endif
+            <a href="{{ route('applications.show', $app->id) }}" class="btn btn-primary btn-sm"><i class="bi bi-eye"></i> View</a>
+        </div>
+    </div>
 
         </div>
         </div>

@@ -14,7 +14,7 @@
         </div>
         <div class="card-body p-3">
             <div class="d-flex flex-wrap gap-2">
-                @foreach(json_decode($application->revision_files, true) as $file)
+                @foreach($application->revision_files ?? [] as $file)
                     <span class="badge" style="background-color: rgba(38, 45, 112, 0.952); color: #ffffff; border: rgba(38, 45, 112, 0.952); border-radius: 0.25rem; padding: 1rem 1rem; font-size: 0.8em;">
                         <i class="fas fa-file-alt me-1"></i> {{ ucfirst(str_replace('_', ' ', $file)) }}
                     </span>

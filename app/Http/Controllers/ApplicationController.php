@@ -46,17 +46,16 @@ class ApplicationController extends Controller
         /**
          * Display the authenticated user's applications.
          */
-        public function application()
-        {
-            $applications = Application::with(['files', 'extraFields'])
-                ->where('user_id', Auth::id())
-                ->latest()
-                ->get();
+    public function application()
+    {
+        $applications = Application::with(['files', 'extraFields'])
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+        $requirements = $this->requirements();
 
-            $requirements = $this->requirements();
-
-            return view('application', compact('applications', 'requirements'));
-        }
+        return view('Application', compact('applications', 'requirements'));
+    }
 
     /**
      * Store a new application with extra fields and file uploads.
@@ -78,8 +77,10 @@ class ApplicationController extends Controller
             'status' => 'Pending',
             'progress_stage' => 'Submitted',
         ]);
+
         // Notify user
         $request->user()->notify(new ApplicationSubmitted());
+
         // ✅ Store uploaded files
         if ($request->hasFile('files')) {
             $this->storeApplicationFiles($application, $request->file('files'));
@@ -182,8 +183,85 @@ class ApplicationController extends Controller
     }
 
     /**
+     * Show the details of a specific application.
+     */
+
+    public function show(Application $application) 
+    {
+        $this->authorize('view', $application); // or check user ownership
+        return view('applications.show', compact('application'));
+    }
+
+    /**
+     * Show the revision form for a specific application.
+     */
+    public function showRevisionForm(Application $application) 
+    {
+        $this->authorize('update', $application);
+        abort_unless($application->revision_files, 404);
+        return view('applications.revision', compact('application'));
+    }
+
+    /**
+     * Submit a revision for a specific application.
+     */
+
+    public function submitRevision(Request $request, Application $application)
+    {
+        // Make sure only the student who owns the application can reupload
+        if ($application->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Validate re-uploaded files
+        $validated = $request->validate([
+            'files' => 'required|array',
+            'files.*' => 'file|max:2048', // 2MB per file
+        ]);
+
+        foreach ($request->file('files') as $key => $file) {
+            // Delete old file if exists
+            $oldFile = $application->files()->where('requirement_key', $key)->first();
+            if ($oldFile && $oldFile->file_path && Storage::disk('public')->exists($oldFile->file_path)) {
+                Storage::disk('public')->delete($oldFile->file_path);
+            }
+
+            // Store new file
+            $path = $file->store("applications/{$application->user_id}/{$application->id}", 'public');
+
+            // Generate label from key
+            $label = ucfirst(str_replace('_', ' ', $key));
+
+            // Save or update record in application_files table
+            $application->files()->updateOrCreate(
+                ['requirement_key' => $key],
+                [
+                    'file_path' => $path,
+                    'requirement_label' => $label,
+                ]
+            );
+        }
+
+        // Reset revision notes after successful reupload
+        $application->revision_files = null;
+        $application->revision_notes = null;
+        $application->status = self::STATUS_PENDING;
+        $application->progress_stage = self::STATUS_SUBMITTED;
+        $application->admin_notes = "Your application has been updated and is awaiting review.";
+        $application->touch();
+        $application->save();
+
+        return redirect()->route('applications.show', $application)
+                 ->with('success', 'Files reuploaded successfully.');
+
+    }
+
+    
+
+    /**
      * Allow student to reupload files if revision was requested.
      */
+    
     public function reupload(Request $request, Application $application)
     {
         // Make sure only the student who owns the application can reupload

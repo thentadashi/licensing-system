@@ -33,7 +33,7 @@ class ApplicationController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $app->revision_files = json_encode($validated['files']);
+        $app->revision_files = $validated['files']; // no json_encode
         $app->revision_notes = $validated['notes'] ?? null;
         $app->status = 'Revision Requested'; // ✅ changed to new status
         $app->progress_stage = 'Revision request'; // ✅ changed to new progress stage

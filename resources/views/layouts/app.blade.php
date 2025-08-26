@@ -77,6 +77,25 @@
 
     /* small helpers */
     .small-muted { color:#6c757d; font-size:.95rem; }
+
+  .file-input::-webkit-file-upload-button {
+      display: none;
+  }
+  .file-input::before {
+      content: 'Choose file';
+      display: inline-block;
+      background: var(--primary-color);
+      color: #fff;
+      border-radius: 6px;
+      padding: .375rem .75rem;
+      cursor: pointer;
+      font-size: .875rem;
+      margin-right: 10px;
+  }
+  .file-input:hover::before {
+      background: #1d245c;
+  }
+
   </style>
 
   @stack('styles')
