@@ -98,7 +98,7 @@
                                                     <option value="Under Review" {{ $app->status->value === 'Under Review' ? 'selected' : '' }}>Under Review</option>
                                                     <option value="Approved" {{ $app->status->value === 'Approved' ? 'selected' : '' }}>Approved</option>
                                                     <option value="Rejected" {{ $app->status->value === 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                                                    <option value="Revision Requested" {{ $app->status->value === 'Revision Requested' ? 'selected' : '' }}>Revision Requested</option>
+                                                    <option value="Revision Requested" {{ $app->status->value === 'Revision Requested' ? 'selected' : '' }}>Revision Request</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">

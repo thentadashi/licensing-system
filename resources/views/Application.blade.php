@@ -96,14 +96,14 @@
 
         <div class="text-end">
             <span class="badge 
-                @if($app->status === 'Approved') bg-success
-                @elseif($app->status === 'Rejected') bg-danger
-                @else bg-secondary @endif">
-                    @if ($app->progress_stage === 'Completed')
+                @if($app->status->value === 'Approved') bg-success
+                @elseif($app->status->value === 'Trashed' || $app->status->value === 'Rejected') bg-danger
+                @else bg-success @endif">
+                    @if ($app->progress_stage->value === 'Completed')
                         Completed
-                    @elseif ($app->progress_stage === 'Ready for Release')
+                    @elseif ($app->progress_stage->value === 'Ready for Release')
                         Ready for Release
-                    @elseif ($app->progress_stage === 'Processing License')
+                    @elseif ($app->progress_stage->value === 'Processing License')
                         Processing License
                     @else
                         {{ $app->status }}

@@ -15,6 +15,8 @@ use App\Http\Controllers\ApplicationController as StudentApplicationController;
 use App\Http\Controllers\Admin\ApplicationArchiveController as AdminApplicationArchiveController;
 use App\Http\Controllers\Admin\ApplicationTrashController as AdminApplicationTrashController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\NewPasswordController;
 
 
 
@@ -58,9 +60,14 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');        
 
+
 // ====================== STUDENT ROUTES (EMAIL VERIFIED ONLY) ======================
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('/dashboard', [dashboardController::class, 'dashboard'])->name('dashboard'); // for viewing the dashboard
+    Route::put('/reset-password', [PasswordController::class, 'update'])->name('password.update'); // for updating password
+
+    Route::get('/new-password', [NewPasswordController::class, 'create'])->name('password.new'); // for showing new password form
+    Route::post('/new-password', [NewPasswordController::class, 'store'])->name('password.new.store'); // for storing new password
 
     Route::get('/application', [ApplicationController::class, 'application'])->name('application'); // for viewing the page
     Route::post('/application', [ApplicationController::class, 'store'])->name('applications.store'); // for submitting the form
@@ -80,6 +87,8 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::post('/applications/{application}', [ApplicationController::class, 'submitRevision'])->name('applications.submitRevision');
     Route::get('/applications/{application}', [StudentApplicationController::class, 'show'])->name('applications.show'); // for viewing a specific application
     Route::post('/applications/{application}/reupload', [ApplicationController::class, 'reupload'])->name('applications.reupload');
+
+
 
 
 
