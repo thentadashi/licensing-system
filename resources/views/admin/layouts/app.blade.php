@@ -122,22 +122,58 @@
           <img src="{{ asset('build/assets/images/logo.png') }}" alt="logo">
         </div>
       </div>
-      <div class="dropdown">
-        <a class="user-btn dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <span>{{ Auth::user()->name ?? 'Admin' }}</span>
-          <i class="bi bi-chevron-down"></i>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
-          <li>
-            <form method="POST" action="{{ route('admin.logout') }}">
-              @csrf
-              <button type="submit" class="dropdown-item">Logout</button>
-            </form>
-          </li>
-        </ul>
+
+      <div class="d-flex align-items-center ms-auto">
+
+        {{-- Notifications --}}
+        <div class="dropdown me-3">
+          <a class="nav-link position-relative" href="#" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell fs-5"></i>
+            @if(auth()->user()->unreadNotifications->count() > 0)
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ auth()->user()->unreadNotifications->count() }}
+              </span>
+            @endif
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="notificationDropdown" style="min-width: 300px; max-height: 400px; overflow-y: auto;">
+            <li class="dropdown-header fw-bold">Notifications</li>
+            @forelse(auth()->user()->unreadNotifications as $notification)
+              <li>
+                <a href="#" class="dropdown-item small">
+                  {{ $notification->data['message'] ?? 'New notification' }}
+                  <div class="text-muted small">{{ $notification->created_at->diffForHumans() }}</div>
+                </a>
+              </li>
+            @empty
+              <li><span class="dropdown-item text-muted">No new notifications</span></li>
+            @endforelse
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a href="{{ route('notifications.index') }}" class="dropdown-item text-center">View all</a>
+            </li>
+          </ul>
+        </div>
+
+        {{-- User dropdown --}}
+        <div class="dropdown">
+          <a class="user-btn dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <span>{{ Auth::user()->name ?? 'Admin' }}</span>
+            <i class="bi bi-chevron-down"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
+            <li>
+              <form method="POST" action="{{ route('admin.logout') }}">
+                @csrf
+                <button type="submit" class="dropdown-item">Logout</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+
       </div>
     </nav>
+
 
     <div class="d-flex flex-grow-1">
         <!-- Sidebar -->
@@ -177,15 +213,15 @@
           </a>
 
           <div class="collapse ps-4 {{ request()->routeIs('admin.applications.*') ? 'show' : '' }}" id="applicationsMenu">
-            <a class="nav-link {{ request()->routeIs('admin.applications.index') ? 'active' : '' }}" 
+            <a class="nav-link {{ request()->routeIs('admin.applications.index') ? 'active' : '' }}" style="font-size: 13px" 
               href="{{ route('admin.applications.index') }}">
               <i class="bi bi-folder me-2"></i> All Applications
             </a>
-            <a class="nav-link {{ request()->routeIs('admin.applications.archives.*') ? 'active' : '' }}" 
+            <a class="nav-link {{ request()->routeIs('admin.applications.archives.*') ? 'active' : '' }}" style="font-size: 13px" 
               href="{{ route('admin.applications.archives.index') }}">
               <i class="bi bi-archive me-2"></i> Archives
             </a>
-            <a class="nav-link {{ request()->routeIs('admin.applications.trash.*') ? 'active' : '' }}" 
+            <a class="nav-link {{ request()->routeIs('admin.applications.trash.*') ? 'active' : '' }}" style="font-size: 13px" 
               href="{{ route('admin.applications.trash.index') }}">
               <i class="bi bi-trash me-2"></i> Trash
             </a>

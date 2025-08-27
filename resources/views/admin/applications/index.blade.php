@@ -145,10 +145,10 @@
 
                                     {{-- Archive / Trash Block --}}
                                     @if(!$app->archive && !$app->trash)
-                                        <div class="d-flex align-items-center gap-2">
+                                        <div class="d-flex align-items-center">
                                             <form action="{{ route('admin.applications.archive', $app) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                    <button type="submit" class="btn btn-outline-secondary btn-sm archive-btn"
+                                                    <button type="submit" class="btn btn-outline-secondary btn-sm archive-btn" style="margin-right:5px;"
                                                         onclick="return confirm('Archive this application? You can unarchive later.');">
                                                         <i class="bi bi-archive"></i> Archive
                                                     </button>
@@ -156,7 +156,7 @@
 
                                             <form action="{{ route('admin.applications.trash', $app) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-outline-danger btn-sm trash-btn"
+                                                <button type="submit" class="btn btn-danger btn-sm trash-btn"
                                                     onclick="return confirm('Move to Trash? You can restore from Trash, or delete permanently there.');">
                                                     <i class="bi bi-trash"></i> Trash
                                                 </button>

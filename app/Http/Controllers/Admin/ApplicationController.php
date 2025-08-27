@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Application;
 use App\Notifications\ApplicationStatusChanged;
+use App\Notifications\RevisionRequested;
 
 class ApplicationController extends Controller
 {
@@ -39,6 +40,8 @@ class ApplicationController extends Controller
         $app->progress_stage = 'Revision request'; // ✅ changed to new progress stage
         $app->admin_notes = 'Revision requested by admin. Please upload the requested files to the portal.';
         $app->save();
+
+        $app->user->notify(new RevisionRequested($app)); // 🔔 notify student
 
         return back()->with('success', 'Revision request sent to student.');
     }

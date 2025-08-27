@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\ApplicationSubmitted;
+use App\Notifications\RevisionSubmitted;
+use App\Models\User;
+
 
 class ApplicationController extends Controller
 {
@@ -219,7 +222,7 @@ class ApplicationController extends Controller
             'files.*' => 'file|max:2048', // 2MB per file
         ]);
 
-        foreach ($request->file('files') as $key => $file) {
+        foreach ($validated['files'] as $key => $file) {
             // Delete old file if exists
             $oldFile = $application->files()->where('requirement_key', $key)->first();
             if ($oldFile && $oldFile->file_path && Storage::disk('public')->exists($oldFile->file_path)) {
@@ -250,6 +253,12 @@ class ApplicationController extends Controller
         $application->admin_notes = "Your application has been updated and is awaiting review.";
         $application->touch();
         $application->save();
+
+            // 🔔 notify all admins (super_admin + clerks)
+        $admins = User::whereIn('role', ['super_admin', 'clerk'])->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new RevisionSubmitted($application));
+        }
 
         return redirect()->route('applications.show', $application)
                  ->with('success', 'Files reuploaded successfully.');
@@ -306,6 +315,12 @@ class ApplicationController extends Controller
         $application->admin_notes = "Your application has been updated and is awaiting review.";
         $application->touch();
         $application->save();
+
+            // 🔔 notify all admins (super_admin + clerks)
+        $admins = User::whereIn('role', ['super_admin', 'clerk'])->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new RevisionSubmitted($application));
+        }
 
         return back()->with('success', 'Files reuploaded successfully.');
     }

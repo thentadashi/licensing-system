@@ -131,11 +131,48 @@
       <!-- Topbar -->
       <header class="app-topbar">
         <div class="d-flex align-items-center">
-          <button id="sidebarToggle" class="btn btn-outline-secondary d-lg-none me-2" aria-label="Toggle menu"><i class="bi bi-list"></i></button>
-          <div class="small-muted"><i class="bi bi-calendar"></i> {{ now()->format('M d, Y') }}</div>
+          <button id="sidebarToggle" class="btn btn-outline-secondary d-lg-none me-2" aria-label="Toggle menu">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="small-muted">
+            <i class="bi bi-calendar"></i> {{ now()->format('M d, Y') }}
+          </div>
         </div>
 
-        <div>
+        <div class="d-flex align-items-center ms-auto">
+
+          {{-- 🔔 Notifications --}}
+          @auth
+          <div class="dropdown me-3">
+            <a class="nav-link position-relative" href="#" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bell fs-5"></i>
+              @if(auth()->user()->unreadNotifications->count() > 0)
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ auth()->user()->unreadNotifications->count() }}
+                </span>
+              @endif
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end p-2 shadow-sm" aria-labelledby="notificationDropdown" style="min-width: 300px; max-height: 400px; overflow-y: auto;">
+              <li class="dropdown-header fw-bold">Notifications</li>
+              @forelse(auth()->user()->unreadNotifications as $notification)
+                <li>
+                  <a href="{{ route('applications.show', $notification->data['application_id'] ?? '') }}" class="dropdown-item small">
+                    {{ $notification->data['message'] ?? 'New notification' }}
+                    <div class="text-muted small">{{ $notification->created_at->diffForHumans() }}</div>
+                  </a>
+                </li>
+              @empty
+                <li><span class="dropdown-item text-muted">No new notifications</span></li>
+              @endforelse
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a href="{{ route('notifications.index') }}" class="dropdown-item text-center">View all</a>
+              </li>
+            </ul>
+          </div>
+          @endauth
+
+          {{-- 👤 User dropdown --}}
           @auth
           <div class="dropdown">
             <a href="#" class="user-btn dropdown-toggle" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
@@ -153,12 +190,15 @@
             </ul>
           </div>
           @endauth
+
           @guest
             <a href="{{ route('login') }}" class="btn btn-sm btn-primary">Sign in</a>
             <a href="{{ route('register') }}" class="btn btn-sm btn-outline-secondary">Register</a>
           @endguest
+
         </div>
       </header>
+
 
       <!-- Content -->
       <main class="app-content">

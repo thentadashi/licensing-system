@@ -14,6 +14,7 @@ use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\ApplicationController as StudentApplicationController;
 use App\Http\Controllers\Admin\ApplicationArchiveController as AdminApplicationArchiveController;
 use App\Http\Controllers\Admin\ApplicationTrashController as AdminApplicationTrashController;
+use App\Http\Controllers\Admin\NotificationController;
 
 
 
@@ -133,6 +134,15 @@ Route::middleware(['auth', 'role:super_admin, clerk'])
         Route::get('/applications/{application}', [AdminApplicationController::class, 'show'])->name('admin.applications.show');
 
 
+    });
+
+    // ===================== Shared Routes Students + admins ======================================
+
+    // works for students + admins
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
     });
 
     
