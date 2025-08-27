@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     labels.style.display = 'block';
                     updateBtn.style.display = 'block';
                     trashBtn.style.display = 'none';
-                    archiveBtn.style.display = 'none';
                     adminNotes.value = 'Your application is being processed for licensing.';
 
                     // Show only allowed progress options
@@ -124,6 +123,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
             }
         }
+
+        function setStyleforArchiveButton() {
+            if (progressStage.value === 'Completed') {
+                archiveBtn.style.display = 'block';
+            } else {
+                archiveBtn.style.display = 'none';
+            }
+        }
+
+        // Initialize
+        setStyleforArchiveButton(progressStage.value);
+
+        progressStage.addEventListener('change', () => {
+            setStyleforArchiveButton(progressStage.value);
+        });
 
         // Initialize UI on page load
         updateUI(statusSelect.value);
