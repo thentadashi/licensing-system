@@ -36,7 +36,6 @@ class RegisteredUserController extends Controller
             'middle_name'     => ['nullable', 'string', 'max:255'],
             'email'           => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'contact_number'  => ['required', 'string', 'regex:/^(\+63|0)\d{10}$/'],
-            'student_id'      => ['required', 'string', 'max:50', 'unique:users,student_id'],
             'program'         => ['required', 'string', 'max:255'],
             'username'        => ['required', 'string', 'max:50', 'unique:users,username'],
             'gender'          => ['required', 'in:Male,Female,Other'],
@@ -55,6 +54,13 @@ class RegisteredUserController extends Controller
             'contact_number.regex' => 'Contact number must be in PH format (+63 or 0 followed by 10 digits).',
         ]);
 
+        // ✅ Conditional validation for student_id
+        if (in_array($request->program, ['BSCF', 'BSAOM'])) {
+            $request->validate([
+                'student_id' => ['required', 'string', 'max:50', 'unique:users,student_id'],
+            ]);
+        }
+
         $user = User::create([
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
@@ -62,14 +68,14 @@ class RegisteredUserController extends Controller
             'name'           => $request->last_name . ', ' . $request->first_name . ' ' . $request->middle_name, 
             'email'          => $request->email,
             'contact_number' => $request->contact_number,
-            'student_id'     => $request->student_id,
+            'student_id'     => $request->student_id, // can be null if not required
             'program'        => $request->program,
             'username'       => $request->username,
             'gender'         => $request->gender,
             'birthdate'      => $request->birthdate,
             'address'        => $request->address,
             'password'       => Hash::make($request->password),
-            'role'           => 'student', // Default role
+            'role'           => 'student',
         ]);
 
         event(new Registered($user));
@@ -78,4 +84,5 @@ class RegisteredUserController extends Controller
 
         return redirect(RouteServiceProvider::HOME);
     }
+
 }

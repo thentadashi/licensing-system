@@ -42,7 +42,6 @@
                 <option value="" disabled selected>Select your gender</option>
                 <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
                 <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
             </select>
             @error('gender') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
@@ -67,19 +66,34 @@
     {{-- ================= SECTION 2: ACADEMIC INFORMATION ================= --}}
     <h5 class="mt-4 mb-3 border-bottom pb-2"><i class="bi bi-mortarboard-fill"></i> Academic Information</h5>
     <div class="row g-3">
-        {{-- Student ID --}}
-        <div class="col-md-4">
+        {{-- Student ID (only for BSCF & BSAOM) --}}
+        <div class="col-md-4" id="studentIdWrapper" style="display: none;">
             <label for="student_id" class="form-label">Student I.D. no.<span class="text-danger">*</span></label>
-            <input id="student_id" type="text" class="form-control @error('student_id') is-invalid @enderror"
-                   name="student_id" value="{{ old('student_id') }}" required>
+            <input id="student_id" type="text" 
+                class="form-control @error('student_id') is-invalid @enderror"
+                name="student_id" value="{{ old('student_id') }}">
             @error('student_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         {{-- Program --}}
         <div class="col-md-8">
             <label for="program" class="form-label">Program<span class="text-danger">*</span></label>
-            <input id="program" type="text" class="form-control @error('program') is-invalid @enderror"
-                   name="program" value="{{ old('program') }}" required>
+            <select id="program" name="program" 
+                    class="form-select @error('program') is-invalid @enderror" required>
+                <option value="">-- Select Program --</option>
+                <option value="BSCF" {{ old('program') == 'BSCF' ? 'selected' : '' }} style="font-size: 0.9rem;">
+                    (BS CF) BS in Aviation Major in Commercial Flying
+                </option>
+                <option value="BSAOM" {{ old('program') == 'BSAOM' ? 'selected' : '' }} style="font-size: 0.9rem;">
+                    (BS AOM) BS in Aviation Major in Airline Operation Management
+                </option>
+                <option value="FAST TRACK" {{ old('program') == 'FAST TRACK' ? 'selected' : '' }}>
+                    FAST TRACK
+                </option>
+                <option value="FLEXI" {{ old('program') == 'FLEXI' ? 'selected' : '' }}>
+                    FLEXI
+                </option>
+            </select>
             @error('program') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
     </div>
@@ -179,6 +193,28 @@ document.querySelectorAll('.toggle-password').forEach(button => {
             icon.classList.replace('bi-eye-slash', 'bi-eye');
         }
     });
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const programSelect = document.getElementById('program');
+    const studentIdWrapper = document.getElementById('studentIdWrapper');
+    const studentIdInput = document.getElementById('student_id');
+
+    function toggleStudentId() {
+        const value = programSelect.value;
+        if (value === 'BSCF' || value === 'BSAOM') {
+            studentIdWrapper.style.display = 'block';
+            studentIdInput.setAttribute('required', 'required');
+        } else {
+            studentIdWrapper.style.display = 'none';
+            studentIdInput.removeAttribute('required');
+            studentIdInput.value = ''; // clear if hidden
+        }
+    }
+
+    programSelect.addEventListener('change', toggleStudentId);
+    toggleStudentId(); // run on load (for old input restore)
 });
 </script>
 @endsection
