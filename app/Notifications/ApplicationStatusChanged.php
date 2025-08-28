@@ -31,11 +31,8 @@ class ApplicationStatusChanged extends Notification
     public function toArray($notifiable)
     {
         return [
-            'title' => 'Application status updated',
             'application_id' => $this->application->id,
-            'from' => $this->old,
-            'to' => $this->new,
-            'admin_notes' => $this->application->admin_notes,
+            'message' => 'Your application for ' . $this->application->application_type . ' status has been updated. From ' . $this->old . ' to ' . $this->new,
         ];
     }
 }

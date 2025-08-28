@@ -21,7 +21,7 @@
                 {{ is_null($notification->read_at) ? 'list-group-item-info' : '' }}">
                 
                 <div class="me-auto">
-                    <div class="fw-semibold text-truncate" style="max-width: 500px;">
+                    <div class="fw-semibold" style="max-width: 500px;">
                         {{ $notification->data['message'] ?? 'Notification' }}
                     </div>
                     <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>

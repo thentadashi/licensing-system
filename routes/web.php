@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ApplicationTrashController as AdminApplicationTra
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\FormController;
 
 
 
@@ -78,7 +79,6 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // for updating the profile
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');      // for deleting the profile
 
-    Route::get('/downloadable-forms', function () {return view('downloadable-forms');})->name('downloadable-forms'); // for viewing the downloadable forms
     Route::get('/license-requirements', function () {return view('license-requirements');})->name('license-requirements'); // for viewing the license requirements
 
     Route::get('/announcements', [AdminDashboardController::class, 'announcements'])->name('announcements'); // for viewing announcements
@@ -88,6 +88,7 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('/applications/{application}', [StudentApplicationController::class, 'show'])->name('applications.show'); // for viewing a specific application
     Route::post('/applications/{application}/reupload', [ApplicationController::class, 'reupload'])->name('applications.reupload');
 
+    Route::get('/forms', [FormController::class, 'index'])->name('forms.index');
 
 
 

@@ -25,8 +25,8 @@ class ApplicationSubmitted extends Notification
     public function toArray($notifiable)
     {
         return [
-            'title' => 'Application submitted',
-            'message' => 'Your application was submitted successfully.'
+            'application_id' => $this->application->id,
+            'message' => 'Your application for ' . $this->application->application_type . ' was submitted successfully.'
         ];
     }
 }

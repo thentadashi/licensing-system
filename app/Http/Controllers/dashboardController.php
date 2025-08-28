@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Announcement;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 
 class dashboardController extends Controller
 {
@@ -14,6 +15,9 @@ class dashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('Dashboard', compact('announcements'));
+        $files = File::files(public_path('downloadable_forms'));
+
+        return view('Dashboard', compact('announcements', 'files'));
     }
+
 }

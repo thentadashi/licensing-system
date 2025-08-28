@@ -18,26 +18,16 @@
     </div>
 
     <!-- Downloadable Forms -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-custom-primary text-white fw-bold">
-            Downloadable Forms
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-custom-primary text-white fw-bold">
+                Downloadable Forms
+            </div>
+            <div class="card-body text-center">
+                <a href="{{ route('forms.index') }}" class="btn btn-primary">
+                    <i class="bi bi-folder2-open"></i> View All Forms
+                    </a>
+            </div>
         </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                <a href="#" class="text-decoration-none" style="color: #262e70;">
-                    <i class="bi bi-file-earmark-arrow-down"></i> 541 Form
-                </a>
-            </li>
-            <li class="list-group-item">
-                <a href="#" class="text-decoration-none" style="color: #262e70;">
-                    <i class="bi bi-file-earmark-arrow-down"></i> Medical Forms
-                </a>
-            </li>
-            <li class="list-group-item">
-                <a href="#" class="text-decoration-none" style="color: #262e70;">
-                    <i class="bi bi-file-earmark-arrow-down"></i> Radiotelephony Form
-                </a>
-            </li>
-        </ul>
-    </div>
+        <!-- End Downloadable Forms -->
 </div>
